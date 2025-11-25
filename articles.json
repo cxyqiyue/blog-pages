@@ -14,13 +14,5 @@
     "category": "其他",
     "date": "2025-11-25",
     "cover": ""
-  },
-  {
-    "title": "Admin CLI 测试文章",
-    "url": "posts/test-admin-cli.html",
-    "summary": "---",
-    "category": "技术",
-    "date": "2025-11-25",
-    "cover": "https://via.placeholder.com/300x200"
   }
 ]
