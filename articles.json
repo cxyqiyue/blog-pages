@@ -4,13 +4,15 @@
     "url": "posts/hello-world.html",
     "summary": "这是我的第一篇博客文章，测试工作流修复。",
     "category": "其他",
-    "date": "2025-11-25"
+    "date": "2025-11-25",
+    "cover": ""
   },
   {
     "title": "第二篇文章",
     "url": "posts/second-post.html",
     "summary": "这是第二篇文章的测试更新。",
     "category": "其他",
-    "date": "2025-11-25"
+    "date": "2025-11-25",
+    "cover": ""
   }
 ]

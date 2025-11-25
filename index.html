@@ -1,83 +1,117 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的博客</title>
-    <link rel="stylesheet" href="style.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>我的博客</title>
+        <link rel="stylesheet" href="style.css">
 </head>
-<body class="index-container">
-    <header><h1><a href="index.html">我的博客</a></h1></header>
-    <nav class="category-nav"><a href="#" data-category="all" class="active">全部文章</a></nav>
-    <main class="articles">
-        <div class="loading">加载中...</div>
-    </main>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <div class="logo">
+                <img src="https://www.gravatar.com/avatar/?d=mp&s=80" alt="logo">
+                <h1><a href="index.html">我的博客</a></h1>
+            </div>
+            <div class="controls">
+                <button id="theme-toggle" class="toggle-dark">切换暗色</button>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h2>欢迎来到我的博客</h2>
+            <p>记录学习与生活的点滴 — 技术 · 生活 · 科技</p>
+            <div class="tools">
+                <div class="search">
+                    <input id="search-input" placeholder="搜索文章标题或摘要..." />
+                </div>
+            </div>
+        </section>
+
+        <nav class="category-nav">
+            <!-- 分类按钮会由脚本填充 -->
+        </nav>
+
+        <main class="articles" role="main">
+            <div class="loading">加载中...</div>
+        </main>
+    </div>
 
     <script>
-        // 异步加载 articles.json（确保路径与部署后一致）
+        // 本地暗色模式开关
+        (function(){
+            const btn = document.getElementById('theme-toggle');
+            const setTheme = (dark)=>{
+                if(dark) document.documentElement.style.background = 'linear-gradient(180deg,#071024,#071024)';
+                else document.documentElement.style.background = '';
+                localStorage.setItem('dark-mode', dark? '1':'0');
+            }
+            const saved = localStorage.getItem('dark-mode');
+            if(saved === '1') setTheme(true);
+            btn.addEventListener('click', ()=>{
+                const now = localStorage.getItem('dark-mode') === '1';
+                setTheme(!now);
+            });
+        })();
+
+        // 异步加载 articles.json 并渲染
         fetch('articles.json')
-            .then(response => {
-                if (!response.ok) throw new Error('加载文章失败');
-                return response.json();
-            })
+            .then(r=>{ if(!r.ok) throw new Error('加载文章失败'); return r.json(); })
             .then(articles => {
                 const articlesContainer = document.querySelector('.articles');
                 const categoryNav = document.querySelector('.category-nav');
-                
-                // 提取并排序所有分类（去重）
-                const categories = [...new Set(articles.map(a => a.category))]
-                    .sort((a, b) => a.localeCompare(b, 'zh-CN')); // 中文排序
+                const searchInput = document.getElementById('search-input');
 
-                // 渲染分类导航
-                categories.forEach(category => {
-                    const a = document.createElement('a');
-                    a.href = '#';
-                    a.dataset.category = category;
-                    a.textContent = category;
-                    a.addEventListener('click', (e) => filterArticles(e, category));
-                    categoryNav.appendChild(a);
+                // 基本数据处理：去重并排序分类
+                const categories = ['全部文章', ...Array.from(new Set(articles.map(a=>a.category))).sort((a,b)=>a.localeCompare(b,'zh-CN'))];
+
+                // 渲染分类按钮
+                categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.textContent = cat;
+                    btn.dataset.category = cat === '全部文章' ? 'all' : cat;
+                    if(cat === '全部文章') btn.classList.add('active');
+                    btn.addEventListener('click', ()=>{ applyFilters(); updateActive(btn.dataset.category); });
+                    categoryNav.appendChild(btn);
                 });
 
-                // 渲染文章列表（按日期倒序）
-                function renderArticles(filteredArticles) {
-                    // 确保日期排序正确（处理空日期情况）
-                    const sortedArticles = filteredArticles.sort((a, b) => {
-                        const dateA = a.date ? new Date(a.date) : new Date(0);
-                        const dateB = b.date ? new Date(b.date) : new Date(0);
-                        return dateB - dateA;
-                    });
-
-                    articlesContainer.innerHTML = sortedArticles.length ? 
-                        sortedArticles.map(a => `
-                            <article class="article-item">
-                                <h2><a href="${a.url}" target="_self">${a.title}</a></h2>
-                                <div class="meta">${a.date || '未知日期'} · <strong>${a.category}</strong></div>
-                                <p class="summary">${a.summary || '无摘要'}</p>
-                            </article>
-                        `).join('') : 
-                        '<p>暂无文章</p>';
+                function updateActive(category){
+                    document.querySelectorAll('.category-nav button').forEach(b=> b.classList.toggle('active', b.dataset.category===category));
                 }
 
-                // 分类筛选逻辑
-                function filterArticles(e, category) {
-                    e.preventDefault();
-                    // 更新活跃状态
-                    document.querySelectorAll('.category-nav a').forEach(link => {
-                        link.classList.toggle('active', link.dataset.category === category);
-                    });
-                    // 筛选文章
-                    const filtered = category === 'all' 
-                        ? articles 
-                        : articles.filter(a => a.category === category);
-                    renderArticles(filtered);
+                function formatArticles(list){
+                    const sorted = list.slice().sort((a,b)=>{ const da=a.date?new Date(a.date):0; const db=b.date?new Date(b.date):0; return db-da; });
+                    if(!sorted.length) return '<p>暂无文章</p>';
+                    return sorted.map(a=>`
+                        <article class="article-item">
+                            ${a.cover? `<img class="article-thumb" src="${a.cover}" alt="cover">` : ''}
+                            <h2><a href="${a.url}">${escapeHtml(a.title)}</a></h2>
+                            <div class="meta">${a.date || '未知日期'} · <strong>${escapeHtml(a.category)}</strong></div>
+                            <p class="summary">${escapeHtml(a.summary || '')}</p>
+                            <div class="card-footer"><a class="read-more" href="${a.url}">阅读全文 →</a></div>
+                        </article>
+                    `).join('');
                 }
 
-                // 初始渲染所有文章
-                renderArticles(articles);
+                function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+                function applyFilters(){
+                    const activeBtn = document.querySelector('.category-nav button.active');
+                    const category = activeBtn? activeBtn.dataset.category : 'all';
+                    const q = (searchInput.value||'').trim().toLowerCase();
+                    let filtered = articles;
+                    if(category !== 'all') filtered = filtered.filter(a => a.category === category);
+                    if(q) filtered = filtered.filter(a => (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q));
+                    articlesContainer.innerHTML = formatArticles(filtered);
+                }
+
+                // 搜索联动
+                searchInput.addEventListener('input', ()=> applyFilters());
+
+                // 初始渲染
+                articlesContainer.innerHTML = formatArticles(articles);
             })
-            .catch(error => {
-                document.querySelector('.articles').innerHTML = `<p style="color: red;">${error.message}</p>`;
-            });
+            .catch(err => { document.querySelector('.articles').innerHTML = `<p style="color:red">${err.message}</p>`; });
     </script>
 </body>
 </html>

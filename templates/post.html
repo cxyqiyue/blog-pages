@@ -1,15 +1,31 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$title$</title>
-    <link rel="stylesheet" href="../style.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>$title$</title>
+        <link rel="stylesheet" href="../style.css">
 </head>
-<body class="post-container">
-    <h1>$title$</h1>
-    <div class="meta">日期：$date$ | 分类：$category$</div>
-    <div class="content">$body$</div>
-    <a href="../index.html" class="back-home">← 返回首页</a>
+<body>
+    <div class="container">
+        <article class="post-container">
+            <header class="post-hero">
+                <!-- Optional cover image: set via -V cover="/path/to/cover.jpg" -->
+                $if(cover)$
+                    <img src="$cover$" alt="cover" class="post-cover" style="width:100%;height:auto;border-radius:10px;margin-bottom:12px;" />
+                $endif$
+                <h1>$title$</h1>
+                <div class="post-meta">日期：<time>$date$</time> · 分类：<strong>$category$</strong></div>
+            </header>
+
+            <section class="post-content">
+                $body$
+            </section>
+
+            <footer style="margin-top:28px;">
+                <a href="../index.html" class="read-more">← 返回首页</a>
+            </footer>
+        </article>
+    </div>
 </body>
 </html>
