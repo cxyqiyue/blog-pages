@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>管理员中心</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+      /* 基础样式 */
+      :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --secondary-color: #64748b;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #0ea5e9;
+        --light-bg: #f8fafc;
+        --dark-bg: #0f172a;
+        --border-color: #e2e8f0;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        --radius: 0.5rem;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background-color: var(--light-bg);
+      }
+      
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1.5rem;
+      }
+      
+      header.site-header {
+        background: white;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 1rem 0;
+      }
+      
+      /* 卡片样式 */
+      .card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+      }
+      
+      .card:hover {
+        box-shadow: var(--shadow-lg);
+      }
+      
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+      
+      /* 按钮样式 */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: var(--transition);
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+      
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+      
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+      }
+      
+      .btn-secondary {
+        background-color: var(--secondary-color);
+        color: white;
+        border-color: var(--secondary-color);
+      }
+      
+      .btn-secondary:hover {
+        opacity: 0.9;
+      }
+      
+      .btn-success {
+        background-color: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+      }
+      
+      .btn-success:hover {
+        opacity: 0.9;
+      }
+      
+      .btn-danger {
+        background-color: var(--danger-color);
+        color: white;
+        border-color: var(--danger-color);
+      }
+      
+      .btn-danger:hover {
+        opacity: 0.9;
+      }
+      
+      .btn-warning {
+        background-color: var(--warning-color);
+        color: white;
+        border-color: var(--warning-color);
+      }
+      
+      .btn-warning:hover {
+        opacity: 0.9;
+      }
+      
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+      }
+      
+      .btn-outline:hover {
+        background-color: var(--light-bg);
+      }
+      
+      .btn-sm {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+      }
+      
+      .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+      }
+      
+      /* 表单样式 */
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+      
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+      
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      
+      textarea.form-control {
+        min-height: 200px;
+        resize: vertical;
+      }
+      
+      /* 表格样式 */
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      
+      .table th,
+      .table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .table th {
+        background-color: var(--light-bg);
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      
+      .table tbody tr:hover {
+        background-color: var(--light-bg);
+      }
+      
+      /* 标签页样式 */
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+      }
+      
+      .tab-button {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        color: var(--text-secondary);
+        border-bottom: 3px solid transparent;
+        transition: var(--transition);
+      }
+      
+      .tab-button.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        font-weight: 500;
+      }
+      
+      .tab-button:hover:not(.active) {
+        color: var(--text-primary);
+        background-color: var(--light-bg);
+      }
+      
+      .tab-content {
+        display: none;
+      }
+      
+      .tab-content.active {
+        display: block;
+      }
+      
+      /* 徽章样式 */
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+      
+      .badge-primary {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      
+      .badge-success {
+        background-color: var(--success-color);
+        color: white;
+      }
+      
+      .badge-warning {
+        background-color: var(--warning-color);
+        color: white;
+      }
+      
+      .badge-danger {
+        background-color: var(--danger-color);
+        color: white;
+      }
+      
+      /* 警报样式 */
+      .alert {
+        padding: 1rem;
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+      }
+      
+      .alert-success {
+        background-color: #dcfce7;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+      }
+      
+      .alert-danger {
+        background-color: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+      }
+      
+      .alert-warning {
+        background-color: #fef3c7;
+        border: 1px solid #fde68a;
+        color: #92400e;
+      }
+      
+      /* 布局样式 */
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.75rem;
+      }
+      
+      .col {
+        flex: 1;
+        padding: 0 0.75rem;
+      }
+      
+      .col-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+      }
+      
+      .col-9 {
+        flex: 0 0 75%;
+        max-width: 75%;
+      }
+      
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+        
+        .row {
+          flex-direction: column;
+          margin: 0;
+        }
+        
+        .col,
+        .col-3,
+        .col-9 {
+          flex: 1;
+          max-width: 100%;
+          padding: 0;
+          margin-bottom: 1rem;
+        }
+        
+        .tabs {
+          flex-wrap: wrap;
+        }
+        
+        .tab-button {
+          flex: 1;
+          text-align: center;
+        }
+      }
+    </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="margin: 0; font-size: 1.5rem;">增强版管理员中心</h1>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <a href="admin.html" class="btn btn-outline btn-sm">基础版</a>
+          <a href="../index.html" class="btn btn-outline btn-sm">← 返回首页</a>
+        </div>
+      </div>
+    </header>
+  <div class="container admin-panel">
+    <h2>管理员中心</h2>
+    <p class="muted">说明：本界面为博客系统管理员中心，提供文章管理和评论管理功能。</p>
+    <p><a href="../personal-center.html">访客中心</a></p>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="articles">文章管理</div>
+      <div class="tab" data-tab="comments">评论管理</div>
+      <div class="tab" data-tab="settings">系统设置</div>
+    </div>
+
+    <!-- 文章管理 -->
+    <div id="articles" class="tab-content active">
+      <h3>文章列表</h3>
+      <div id="posts-list">
+        <p class="muted">加载中...</p>
+      </div>
+
+      <h3 style="margin-top: 30px;">新建 / 编辑文章</h3>
+      <div class="form-group">
+        <label for="post-slug">文件名（例如 hello-world）</label>
+        <input id="post-slug" placeholder="文件名（例如 hello-world）" />
+      </div>
+      
+      <div class="form-group">
+        <label for="post-title">文章标题</label>
+        <input id="post-title" placeholder="文章标题" />
+      </div>
+      
+      <div class="form-group">
+        <label for="post-frontmatter">YAML Frontmatter (可选)</label>
+        <input id="post-frontmatter" placeholder="例如 cover: /images/cover.jpg" />
+      </div>
+      
+      <div class="form-group">
+        <label for="post-content">文章内容 (Markdown格式)</label>
+        <textarea id="post-content" placeholder="在此填写 Markdown 内容..."></textarea>
+      </div>
+      
+      <div style="text-align: right;">
+      </div>
+    </div>
+
+    <!-- 评论管理 -->
+    <div id="comments" class="tab-content">
+      <h3>所有评论</h3>
+      <div id="comments-list">
+        <p class="muted">加载中...</p>
+      </div>
+    </div>
+
+    <!-- 系统设置 -->
+    <div id="settings" class="tab-content">
+      <h3>系统设置</h3>
+      <div class="item">
+        <div>
+          <strong>管理员权限</strong>
+          <div class="muted">当前浏览器已获得管理员权限</div>
+        </div>
+        <div class="ops">
+        </div>
+      </div>
+      
+      <div class="item">
+        <div>
+          <strong>导出变更</strong>
+          <div class="muted">将本地变更导出为 JSON 文件</div>
+        </div>
+        <div class="ops">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 检查是否为仓库主人（只有仓库主人才能访问管理员中心）
+      function loadVisitor() {
+        try {
+          return JSON.parse(localStorage.getItem('visitor_profile') || 'null');
+        } catch(e) {
+          return null;
+        }
+      }
+      
+      const visitor = loadVisitor();
+      const isOwner = visitor && visitor.name === 'cxyqiyue'; // 仓库主人的GitHub用户名
+      
+      // 检查是否为管理员且是仓库主人
+      if (localStorage.getItem('blog_is_admin') !== '1' || !isOwner) {
+        // 如果不是仓库主人或没有管理员权限，重定向到访客中心
+        window.location.href = '../personal-center.html';
+        return;
+      }
+      
+      // 初始化所有功能
+      initializeArticleManagement();
+      initializeCommentManagement();
+      initializeStatistics();
+    });
+  </script>
+</body>
+</html>

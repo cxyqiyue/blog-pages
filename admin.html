@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>管理员中心</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+      /* 基础样式 */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f5f5f5;
+      }
+      
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      header.site-header {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      .admin-panel {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      }
+      
+      textarea {
+        width: 100%;
+        min-height: 300px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 14px;
+        resize: vertical;
+      }
+      
+      input[type="text"] {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      
+      .form-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      
+      .form-row input {
+        flex: 1;
+      }
+      
+      .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.2s;
+        margin-right: 8px;
+      }
+      
+      .btn:hover {
+        background-color: #0056b3;
+      }
+      
+      .btn-danger {
+        background-color: #dc3545;
+      }
+      
+      .btn-danger:hover {
+        background-color: #c82333;
+      }
+      
+      .btn-success {
+        background-color: #28a745;
+      }
+      
+      .btn-success:hover {
+        background-color: #218838;
+      }
+      
+      pre {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      
+      code {
+        font-family: 'Monaco', 'Courier New', monospace;
+        background: #f8f9fa;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+      
+      .muted {
+        color: #6c757d;
+      }
+      
+      hr {
+        margin: 24px 0;
+        border: 0;
+        border-top: 1px solid #eee;
+      }
+      
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .container {
+          padding: 12px;
+        }
+        
+        .admin-panel {
+          padding: 20px;
+        }
+        
+        .form-row {
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site-header">
+      <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0;">
+          <h1 style="margin: 0; font-size: 1.5rem;">管理员中心</h1>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <a href="../index.html" class="btn" style="text-decoration: none; padding: 6px 12px;">← 返回首页</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <main class="main-content">
+      <div class="admin-panel">
+        <h2>主人中心（本地模式）</h2>
+        <p class="muted">说明：本界面为本地管理工具。变更会保存在浏览器（本地），请导出 JSON 并在本机上用 <code>scripts/admin-cli.py</code> 应用并提交到仓库。</p>
+        <p><a href="../personal-center.html">访客中心</a> | <a href="admin-enhanced.html">增强版管理员中心</a></p>
+        
+        <div style="margin-top: 20px;">
+          <button id="export-btn" class="btn btn-success">导出变更为 JSON</button>
+          <button id="set-admin-btn" class="btn">标记为管理员</button>
+          <button id="clear-admin-btn" class="btn btn-danger">取消管理员</button>
+        </div>
+        
+        <hr>
+        
+        <h3>文章列表</h3>
+        <div id="posts-list"></div>
+        
+        <h3 style="margin-top: 24px">新建 / 编辑文章</h3>
+        <div class="form-row">
+          <input id="post-slug" placeholder="文件名（例如 hello-world）" />
+          <input id="post-title" placeholder="文章标题" />
+        </div>
+        <div style="margin-bottom: 12px;">
+          <input id="post-frontmatter" placeholder="YAML Frontmatter (可选)：例如 cover: /images/cover.jpg" style="width: 100%;" />
+        </div>
+        <div style="margin-bottom: 12px;">
+          <textarea id="post-content" placeholder="在此填写 Markdown 内容..."></textarea>
+        </div>
+        <div>
+          <button id="save-post-btn" class="btn">保存为本地变更</button>
+        </div>
+        
+        <h3 style="margin-top: 24px">本地变更（未导出）</h3>
+        <div id="changes-list" class="muted"></div>
+        
+        <hr>
+        
+        <h4>如何使用</h4>
+        <ol>
+          <li>在此页面新增或编辑文章，点击"保存为本地变更"。</li>
+          <li>完成后点击"导出变更为 JSON"，将下载一个文件（例如 changes.json）。</li>
+          <li>在你本地仓库目录下运行：<pre><code>python scripts/admin-cli.py changes.json</code></pre> 该脚本会把变更写入 `posts/` 并提交到 git（需你本机有权限）。</li>
+        </ol>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 检查是否为仓库主人（只有仓库主人才能访问管理员中心）
+      function loadVisitor() {
+        try {
+          return JSON.parse(localStorage.getItem('visitor_profile') || 'null');
+        } catch(e) {
+          return null;
+        }
+      }
+      
+      const visitor = loadVisitor();
+      const isOwner = visitor && visitor.name === 'cxyqiyue'; // 仓库主人的GitHub用户名
+      
+      // 检查是否为管理员且是仓库主人
+      if (localStorage.getItem('blog_is_admin') !== '1' || !isOwner) {
+        // 如果不是仓库主人或没有管理员权限，重定向到访客中心
+        window.location.href = '../personal-center.html';
+        return;
+      }
+      
+      const postsList = document.getElementById('posts-list');
+      const changesList = document.getElementById('changes-list');
+      const exportBtn = document.getElementById('export-btn');
+      const setAdminBtn = document.getElementById('set-admin-btn');
+      const clearAdminBtn = document.getElementById('clear-admin-btn');
+      
+      function loadChanges(){ try { return JSON.parse(localStorage.getItem('admin_changes')||'[]'); } catch(e){return []} }
+      function saveChanges(ch){ localStorage.setItem('admin_changes', JSON.stringify(ch)); renderChanges(); }
+      
+      function loadToEditor(c){ 
+        document.getElementById('post-slug').value = c.slug || ''; 
+        document.getElementById('post-title').value = c.title || ''; 
+        document.getElementById('post-frontmatter').value = c.frontmatter || ''; 
+        document.getElementById('post-content').value = c.content || ''; 
+      }
+      
+      // load existing articles.json to list (read-only)
+      fetch('../articles.json').then(r=>r.json()).then(arts=>{
+        postsList.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>标题</th>
+                <th>分类</th>
+                <th>日期</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${arts.map(a=>`
+                <tr>
+                  <td><a href="../${a.url}" target="_blank">${a.title}</a></td>
+                  <td>${a.category}</td>
+                  <td>${a.date}</td>
+                  <td>
+                    <button class="btn btn-sm edit-btn" data-url="${a.url}">编辑</button>
+                    <button class="btn btn-sm btn-danger delete-btn" data-url="${a.url}">删除</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        
+        document.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click', e=>{
+          const url = e.target.dataset.url; 
+          const slug = url.split('/').pop().replace(/\.html$/,'');
+          // fetch existing markdown from posts/<slug>.md if available via relative path
+          fetch(`../posts/${slug}.md`).then(r=>r.text()).then(txt=>{
+            document.getElementById('post-slug').value = slug;
+            // try to extract title from first heading
+            const m = txt.match(/^#\s+(.+)$/m);
+            document.getElementById('post-title').value = m?m[1] : '';
+            document.getElementById('post-content').value = txt;
+          }).catch(()=>{ 
+            alert('无法直接读取本地 markdown（浏览器受限）。请在本地使用 admin-cli 来编辑文件，或把文章内容粘贴到编辑器中。'); 
+          });
+        }));
+        
+        document.querySelectorAll('.delete-btn').forEach(b=>b.addEventListener('click', e=>{
+          const url = e.target.dataset.url; 
+          const slug = url.split('/').pop().replace(/\.html$/,''); 
+          if(!confirm('确认删除文章（仅在本地变更，需导出并用 admin-cli 应用）？')) return; 
+          const ch = loadChanges(); 
+          ch.push({action:'delete',slug:slug}); 
+          saveChanges(ch);
+        }));
+      }).catch(()=>{ 
+        postsList.innerHTML = '<p class="muted">无法加载文章预览</p>' 
+      });
+      
+      document.getElementById('save-post-btn').addEventListener('click', ()=>{
+        const slug = document.getElementById('post-slug').value.trim();
+        const title = document.getElementById('post-title').value.trim();
+        const frontmatter = document.getElementById('post-frontmatter').value.trim();
+        const content = document.getElementById('post-content').value;
+        if(!slug || !title){ 
+          alert('请填写文件名和标题'); 
+          return; 
+        }
+        const ch = loadChanges();
+        ch.push({
+          action:'upsert', 
+          slug:slug, 
+          title:title, 
+          frontmatter:frontmatter, 
+          content:content, 
+          date: new Date().toISOString().slice(0,10)
+        });
+        saveChanges(ch);
+        alert('已保存为本地变更（未导出）。');
+      });
+      
+      exportBtn.addEventListener('click', ()=>{
+        const ch = loadChanges(); 
+        if(!ch.length){ 
+          alert('没有变更可导出'); 
+          return; 
+        }
+        const blob = new Blob([JSON.stringify(ch, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); 
+        a.href = url; 
+        a.download = 'changes.json'; 
+        document.body.appendChild(a); 
+        a.click(); 
+        a.remove(); 
+        URL.revokeObjectURL(url);
+      });
+      
+      setAdminBtn.addEventListener('click', ()=>{
+        localStorage.setItem('blog_is_admin','1'); 
+        alert('已在本地标记为管理员（仅此浏览器）'); 
+        document.getElementById('admin-link') && (document.getElementById('admin-link').style.display='inline-block'); 
+      });
+      
+      clearAdminBtn.addEventListener('click', ()=>{
+        localStorage.removeItem('blog_is_admin'); 
+        alert('已取消管理员'); 
+        document.getElementById('admin-link') && (document.getElementById('admin-link').style.display='none'); 
+      });
+      
+      function renderChanges() {
+        const ch = loadChanges();
+        if (!ch.length) {
+          changesList.innerHTML = '<p class="muted">暂无本地变更</p>';
+          return;
+        }
+        
+        changesList.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>操作</th>
+                <th>文件名</th>
+                <th>标题</th>
+                <th>日期</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${ch.map(c=>`
+                <tr>
+                  <td>${c.action === 'upsert' ? '新增/更新' : '删除'}</td>
+                  <td>${c.slug}</td>
+                  <td>${c.title || ''}</td>
+                  <td>${c.date || ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+      
+      renderChanges();
+    });
+  </script>
+</body>
+</html>

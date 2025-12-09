@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GitHub 登录</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+        background-color: #f5f5f5;
+      }
+      
+      .container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+      
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+      
+      .subtitle {
+        color: #7f8c8d;
+        font-size: 1.1em;
+        margin-bottom: 30px;
+      }
+      
+      .login-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: #24292e;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      
+      .login-btn:hover {
+        background: #000;
+      }
+      
+      .login-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+      
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+        text-align: left;
+      }
+      
+      .info-box h3 {
+        margin-top: 0;
+        color: #0d47a1;
+      }
+      
+      .info-box ul {
+        padding-left: 20px;
+      }
+      
+      .info-box li {
+        margin-bottom: 8px;
+      }
+      
+      .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #3498db;
+        text-decoration: none;
+      }
+      
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      
+      footer {
+        margin-top: 30px;
+        color: #7f8c8d;
+        font-size: 0.9em;
+      }
+    </style>
+</head>
+<body>
+  <header class="site-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+      <h1 style="margin: 0; font-size: 1.5rem;">GitHub 登录</h1>
+      <div>
+        <a href="../index.html" style="text-decoration: none; margin-left: 10px;">← 返回首页</a>
+      </div>
+    </div>
+  </header>
+  <div class="container login-panel">
+    <h2>GitHub 登录</h2>
+    <p>点击下方按钮使用 GitHub 账号登录博客系统</p>
+    <div class="loading">正在获取登录链接...</div>
+    <div id="login-container"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // GitHub OAuth 配置
+      const CONFIG = {
+        clientId: 'Ov23li6xfHAMPQC60yFb',
+        redirectUri: window.location.origin + '/pages/github-oauth-callback.html',
+        scope: 'user:email'
+      };
+      
+      // 初始化
+      function init() {
+        try {
+          // 获取来源页面URL作为state参数
+          const referer = document.referrer || '/';
+          sessionStorage.setItem('oauth_redirect_url', referer);
+          
+          // 构造GitHub OAuth授权URL
+          const authUrl = new URL('https://github.com/login/oauth/authorize');
+          authUrl.searchParams.append('client_id', CONFIG.clientId);
+          authUrl.searchParams.append('redirect_uri', CONFIG.redirectUri);
+          authUrl.searchParams.append('scope', CONFIG.scope);
+          authUrl.searchParams.append('state', encodeURIComponent(referer));
+          
+          document.querySelector('.loading').style.display = 'none';
+          
+          // 显示登录按钮
+          document.getElementById('login-container').innerHTML = `
+            <button id="github-login-btn" class="github-login-btn">
+              使用 GitHub 登录
+            </button>
+          `;
+          
+          // 绑定点击事件
+          document.getElementById('github-login-btn').addEventListener('click', () => {
+            window.location.href = authUrl.toString();
+          });
+        } catch (error) {
+          document.querySelector('.loading').style.display = 'none';
+          document.getElementById('result').innerHTML = `<div class="error">错误：无法生成授权链接 - ${error.message}</div>`;
+        }
+      }
+      
+      // 页面加载完成后初始化
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    });
+  </script>
+</body>
+</html>

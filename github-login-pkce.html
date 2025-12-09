@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GitHub 登录</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+      /* 基础样式 */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f5f5f5;
+      }
+      
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      header.site-header {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      
+      .login-panel {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+      
+      .github-login-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background-color: #24292e;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      
+      .github-login-btn:hover {
+        background-color: #2c3238;
+      }
+      
+      .github-login-btn:disabled {
+        background-color: #6a737d;
+        cursor: not-allowed;
+      }
+      
+      .loading {
+        color: #6c757d;
+        font-style: italic;
+      }
+      
+      .error {
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 12px;
+        border-radius: 4px;
+        margin: 16px 0;
+      }
+      
+      .success {
+        color: #28a745;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        padding: 12px;
+        border-radius: 4px;
+        margin: 16px 0;
+      }
+      
+      .note {
+        background-color: #e9ecef;
+        border-left: 4px solid #007bff;
+        padding: 16px;
+        margin: 24px 0;
+        text-align: left;
+      }
+      
+      .note h3 {
+        margin-top: 0;
+      }
+      
+      .note ul {
+        padding-left: 20px;
+      }
+      
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .container {
+          padding: 12px;
+        }
+        
+        .login-panel {
+          padding: 24px;
+        }
+        
+        .github-login-btn {
+          width: 100%;
+        }
+      }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site-header">
+      <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0;">
+          <h1 style="margin: 0; font-size: 1.5rem;">GitHub 登录</h1>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <a href="../index.html" class="btn" style="text-decoration: none; padding: 6px 12px;">← 返回首页</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <main class="main-content">
+      <div class="login-panel">
+        <h2>GitHub 登录 (PKCE 安全增强)</h2>
+        <p>使用 PKCE 流程进行安全的 GitHub OAuth 登录</p>
+        
+        <div class="note">
+          <h3>安全性说明</h3>
+          <p>本页面使用 PKCE (Proof Key for Code Exchange) 流程增强 OAuth 安全性：</p>
+          <ul>
+            <li>防止授权码拦截攻击</li>
+            <li>无需在前端暴露 Client Secret</li>
+            <li>适用于公共客户端（如单页应用）</li>
+          </ul>
+        </div>
+        
+        <div class="loading">正在生成安全参数...</div>
+        <div id="login-container"></div>
+        <div id="result"></div>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // 生成随机字符串
+    function generateRandomString(length) {
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      const values = new Uint8Array(length);
+      crypto.getRandomValues(values);
+      for (let i = 0; i < length; i++) {
+        result += charset[values[i] % charset.length];
+      }
+      return result;
+    }
+    
+    // 生成 code_challenge
+    async function generateCodeChallenge(codeVerifier) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(codeVerifier);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      return btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+    }
+    
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取来源页面URL作为state参数
+      const referer = document.referrer || '../index.html';
+      sessionStorage.setItem('oauth_redirect_url', referer);
+      
+      // 绑定登录按钮事件
+      document.getElementById('github-login-btn').addEventListener('click', function() {
+        // 生成随机字符串作为 code_verifier
+        const codeVerifier = generateRandomString(64);
+        
+        // 存储 code_verifier 到 sessionStorage
+        sessionStorage.setItem('code_verifier', codeVerifier);
+        
+        // 生成 code_challenge
+        generateCodeChallenge(codeVerifier).then(codeChallenge => {
+          // 构建 GitHub OAuth 授权 URL
+          const clientId = 'Ov23li6xfHAMPQC60yFb'; // 替换为你的 GitHub OAuth App Client ID
+          const redirectUri = encodeURIComponent(window.location.origin + '/pages/github-oauth-callback-pkce.html');
+          const state = generateRandomString(32);
+          sessionStorage.setItem('oauth_state', state);
+          
+          const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+          
+          // 重定向到 GitHub OAuth 授权页面
+          window.location.href = authUrl;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

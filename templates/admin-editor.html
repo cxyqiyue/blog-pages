@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 博客管理系统 - Markdown 编辑器</title>
+    <style>
+        /* 基础重置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 16px 0;
+            margin-bottom: 24px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2c3e50;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+        
+        .btn-outline:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        /* 布局 */
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .editor-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 编辑器和预览区域 */
+        .editor-container,
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-header,
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .editor-content,
+        .preview-content {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            background: white;
+            overflow-y: auto;
+        }
+        
+        .preview-content {
+            background: white;
+        }
+        
+        /* 文章列表 */
+        .posts-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .post-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .post-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .post-item.active {
+            background-color: #e3f2fd;
+        }
+        
+        .post-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .post-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Git状态 */
+        .git-status {
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .git-status-item {
+            margin-bottom: 4px;
+        }
+        
+        .git-status-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1>博客文章编辑器</h1>
+                <div>
+                    <button id="save-btn" class="btn">保存</button>
+                    <button id="export-btn" class="btn btn-outline">导出变更</button>
+                    <a href="../index.html" class="btn btn-outline">← 返回首页</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>📚 我的文章</h2>
+                <p id="postCount">加载中...</p>
+            </div>
+            <button class="btn-new-post" onclick="newPost()">✍️ 新建文章</button>
+            <div class="posts-list" id="postsList"></div>
+        </div>
+
+        <!-- 编辑区 -->
+        <div class="editor-container">
+            <div class="editor-header">
+                <div class="editor-title" id="editorTitle">选择或创建文章</div>
+                <div class="editor-actions">
+                    <select id="branchSelect" style="padding:0.4rem 0.6rem; border-radius:0.375rem; border:1px solid var(--gray-300); margin-right:0.5rem;"></select>
+                    <span id="remoteInfo" style="align-self:center; font-size:0.875rem; color:var(--gray-600); margin-right:0.5rem;"></span>
+                    <button class="btn btn-primary" id="saveBtn" onclick="savePost()">💾 保存</button>
+                    <button class="btn btn-success" id="publishBtn" onclick="openPublishDialog()">🚀 发布</button>
+                    <button class="btn btn-danger" id="deleteBtn" onclick="deletePost()">🗑️ 删除</button>
+                    <button class="btn" style="background:#efefef; color:#111; margin-left:0.5rem;" onclick="location.href='/logout'">登出</button>
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div class="editor-content">
+                <!-- 编辑面板 -->
+                <div class="editor-pane">
+                    <div class="editor-label">📝 Markdown 编辑器</div>
+                    <textarea class="editor-textarea" id="editor" placeholder="输入 Markdown 内容...
+示例:
+
+# 文章标题
+
+这是一个段落。
+
+## 小标题
+
+- 列表项 1
+- 列表项 2
+
+``python
+# 代码块
+print('Hello, World!')
+```
+
+[链接](https://example.com)"></textarea>
+                </div>
+
+                <!-- 预览面板 -->
+                <div class="preview-pane">
+                    <div class="editor-label">👁️ 实时预览</div>
+                    <div class="preview-content" id="preview">
+                        <p style="color: var(--gray-500); text-align: center;">预览内容将在这里显示...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Git 状态 -->
+            <div class="git-status" id="gitStatus">检查状态中...</div>
+        </div>
+    </div>
+
+    <!-- 发布对话框 -->
+    <div class="modal" id="publishModal">
+        <div class="modal-content">
+            <div class="modal-header">🚀 发布文章</div>
+            <div class="modal-body">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">提交信息</label>
+                <textarea class="modal-input" id="commitMessage" style="height: 80px; resize: vertical; font-family: inherit;">更新文章</textarea>
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">目标分支</label>
+                <select id="publishBranch" class="modal-input" style="height:auto;"></select>
+                <p style="font-size: 0.875rem; color: var(--gray-600);">文章将被提交到 Git 仓库并推送到所选分支（远程: <span id="publishRemote"></span>）</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closePublishDialog()">取消</button>
+                <button class="btn btn-success" onclick="publishPost()">确认发布</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13/dist/markdown-it.min.js"></script>
+    <script>
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化编辑器
+            initializeEditor();
+            
+            // 绑定保存按钮事件
+            document.getElementById('save-btn').addEventListener('click', savePost);
+            
+            // 绑定导出按钮事件
+            document.getElementById('export-btn').addEventListener('click', exportChanges);
+            
+            // 加载文章列表
+            loadPostsList();
+            
+            // 绑定编辑器输入事件（防抖）
+            editor.addEventListener('input', debounce(updatePreview, 300));
+            
+            // 更新Git状态
+            updateGitStatus();
+            
+            // 每10秒检查一次Git状态
+            setInterval(updateGitStatus, 10000);
+            
+            // 加载分支与远程信息
+            fetchBranchesAndRemote();
+        });
+    </script>
+</body>
+</html>
