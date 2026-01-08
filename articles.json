@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Windows重装系统之ISO",
+    "url": "posts/Windows重装系统之ISO.html",
+    "summary": "众所周知，Windows重装系统第一步也是最重要的一步，就是选择ISO（系统镜像文件）。但是网上搜索Windows的ISO，又怕不是官方原版的镜像。因为第三方的ISO很有可能会被他人植入一些其他东西，万一其中包含流氓软件或病毒那就更麻烦了。因此，选择一个令人放心的ISO下载网站就显得尤为重要了。",
+    "category": "Windows",
+    "date": "2026-01-02 04:05:54",
+    "commit_hash": "383a664",
+    "modifiedDate": "2026-01-02 04:16",
+    "cover": "https://img.114597.xyz/macOS/MediaCreationTool.jpg"
+  },
+  {
+    "title": "Windows重装系统之PE",
+    "url": "posts/Windows重装系统之PE.html",
+    "summary": "Windows预安装环境，简称WinPE，顾名思义就是安装系统时的环境。在此环境下，具有最高权限，可以对系统进行重装、修复、备份等操作。***WinPE如今已经成为安装系统、电脑维护不可或缺的一款必备工具了。***",
+    "category": "Windows",
+    "date": "2025-12-26 05:26:25",
+    "commit_hash": "da3e282",
+    "modifiedDate": "2026-01-02 04:16",
+    "cover": "https://img.114597.xyz/macOS/%E5%BE%AE%E8%BD%AFpe.jpg"
+  },
+  {
+    "title": "Windows电脑之系统",
+    "url": "posts/Windows之系统.html",
+    "summary": "Windows操作系统是大部分人使用的电脑操作系统。但是很多人却并不是很懂该怎么设置它，从而让我们使用它更加得心应手。",
+    "category": "Windows",
+    "date": "2025-12-26 05:26:25",
+    "commit_hash": "da3e282",
+    "modifiedDate": "2026-01-02 04:16",
+    "cover": ""
+  },
+  {
+    "title": "流量卡+保号套餐",
+    "url": "posts/流量卡+保号套餐.html",
+    "summary": "本篇详细介绍如何获取流量卡，以及如何办理保号套餐，合理降低月租费。（若现有套餐包含家庭宽带，则不适合改办保号套餐，可改办包含宽带的最低套餐）",
+    "category": "其他",
+    "date": "2025-12-20 05:50:38",
+    "commit_hash": "f3fd554",
+    "modifiedDate": "2026-01-02 04:16",
+    "cover": "https://img.114597.xyz/macOS/%E5%8D%A1%E4%B8%96%E7%95%8C.jpg"
+  },
+  {
+    "title": "搭建博客",
+    "url": "posts/搭建博客.html",
+    "summary": "本博客基于 GitHub Pages 搭建。",
+    "category": "其他",
+    "date": "2025-12-19 12:06:33",
+    "commit_hash": "065ff4f",
+    "modifiedDate": "2026-01-02 04:16",
+    "cover": ""
+  }
+]
