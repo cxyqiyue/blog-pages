@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <title>柒月小站</title>
+    <link rel="stylesheet" href="style.css">
+        <style>
+          /* Touch optimization */
+          @media (hover: none) and (pointer: coarse) {
+            button, a {
+              min-height: 44px;
+              min-width: 44px;
+            }
+            .category-nav button {
+              min-height: 40px;
+              padding: 8px 14px;
+            }
+            .toggle-dark {
+              min-height: 44px;
+            }
+          }
+          
+          /* User menu styles */
+          .user-menu-container {
+            position: relative;
+            display: inline-block;
+          }
+          
+          .user-login-button {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+          }
+          
+          .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 8px;
+          }
+          
+          .user-name {
+            font-size: 14px;
+          }
+          
+          .login-text {
+            font-size: 14px;
+            padding: 0 8px;
+          }
+          
+          .user-menu-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 200px;
+            z-index: 1000;
+            margin-top: 8px;
+          }
+          
+          .user-info {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+          }
+          
+          .user-info .user-avatar {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+          }
+          
+          .user-info .user-name {
+            font-weight: 500;
+          }
+          
+          .menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0 12px;
+          }
+          
+          .menu-item {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+          }
+          
+          .menu-item:hover {
+            background: var(--bg-secondary);
+          }
+          
+          .logout-btn {
+            color: #dc3545;
+            cursor: pointer;
+          }
+          
+          /* 分页控件样式 */
+          .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+          }
+          
+          .pagination {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 10+ */
+          }
+          
+          .pagination::-webkit-scrollbar {
+            display: none; /* Chrome Safari */
+          }
+          
+          .pagination button {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+          }
+          
+          .pagination button:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+          }
+          
+          .pagination button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+          }
+          
+          .pagination button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+          
+          .pagination button.ellipsis {
+            cursor: default;
+            background: transparent;
+            border: none;
+            padding: 8px 4px;
+          }
+          
+          /* 悬浮按钮 */
+          .floating-buttons {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+          }
+          
+          /* 移动端适配 */
+          @media (max-width: 639px) {
+            .pagination-container {
+              margin-bottom: 100px; /* 为悬浮按钮留出更多空间 */
+            }
+            
+            .pagination {
+              gap: 4px;
+              flex-wrap: nowrap;
+              overflow-x: auto;
+              scrollbar-width: none; /* Firefox */
+              -ms-overflow-style: none; /* IE 10+ */
+            }
+            
+            .pagination::-webkit-scrollbar {
+              display: none; /* Chrome Safari */
+            }
+            
+            .pagination button {
+              padding: 6px 8px;
+              font-size: 12px;
+              min-width: 32px;
+            }
+          }
+          
+          .floating-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+          }
+          
+          .floating-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: scale(1.1);
+          }
+          
+
+          
+          /* Touch optimization */
+          @media (hover: none) and (pointer: coarse) {
+            .article-thumb {
+              min-height: 180px;
+            }
+            
+            .article-title {
+              font-size: 1.1rem;
+              line-height: 1.4;
+            }
+          }
+          
+          /* Responsive images */
+          .article-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+          }
+        </style>
+</head>
+<body>
+    <div class="container">
+
+    <section class="hero">
+        <h2>欢迎来到柒月小站</h2>
+        <div class="tools">
+            <div class="search">
+                <input id="search-input" placeholder="搜索文章标题或摘要..." />
+            </div>
+        </div>
+    </section>
+
+    <nav class="category-nav">
+        <!-- 分类按钮会由脚本填充 -->
+    </nav>
+
+    <main class="articles" role="main">
+        <div class="loading">加载中...</div>
+    </main>
+    
+    <!-- 分页控件 -->
+    <div class="pagination-container">
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+
+    </div>
+
+  <script>
+    // 异步加载 articles.json 并渲染，禁用缓存确保获取最新数据
+    fetch('articles.json', { cache: 'no-cache' })
+        .then(r=>{ 
+            console.log('Fetch response:', r);
+            if(!r.ok) throw new Error('加载文章失败: ' + r.status + ' ' + r.statusText); 
+            return r.json(); 
+        })
+        .then(articles => {
+            console.log('Articles data:', articles);
+            const articlesContainer = document.querySelector('.articles');
+            const categoryNav = document.querySelector('.category-nav');
+            const searchInput = document.getElementById('search-input');
+            const paginationContainer = document.getElementById('pagination');
+            
+            // 分页配置
+            const PAGE_SIZE = 6; // 每页显示的文章数量
+            let currentPage = 1;
+            let filteredArticles = [];
+
+            // 基本数据处理：始终显示指定的五个分类
+            const allowedCategories = ['macOS', 'Windows', 'Android', 'iPhone', '其他'];
+            const categories = ['全部文章', ...allowedCategories.sort((a,b)=>a.localeCompare(b,'zh-CN'))];
+
+            // 渲染分类按钮
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.textContent = cat;
+                btn.dataset.category = cat === '全部文章' ? 'all' : cat;
+                if(cat === '全部文章') btn.classList.add('active');
+                btn.addEventListener('click', ()=>{ applyFilters(); updateActive(btn.dataset.category); });
+                categoryNav.appendChild(btn);
+            });
+
+            function updateActive(category){
+                document.querySelectorAll('.category-nav button').forEach(b=> b.classList.toggle('active', b.dataset.category===category));
+            }
+
+            function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+            
+            // 分页渲染函数
+            function renderPagination(totalItems, currentPage, pageSize) {
+                const totalPages = Math.ceil(totalItems / pageSize);
+                if (totalPages <= 1) {
+                    paginationContainer.innerHTML = '';
+                    return;
+                }
+                
+                let paginationHTML = '';
+                
+                // 上一页按钮
+                if (currentPage > 1) {
+                    paginationHTML += `<button onclick="changePage(${currentPage - 1})">‹ 上一页</button>`;
+                } else {
+                    paginationHTML += '<button class="disabled">‹ 上一页</button>';
+                }
+                
+                // 根据屏幕宽度确定最大可见页码数
+                let maxVisiblePages = 9; // 默认显示9个页码按钮（包括省略号）
+                if (window.innerWidth <= 639) {
+                    maxVisiblePages = 4; // 手机端最多显示4个页码按钮
+                } else if (window.innerWidth <= 1024) {
+                    maxVisiblePages = 7; // 平板端显示7个页码按钮
+                } else {
+                    maxVisiblePages = 9; // 电脑端显示9个页码按钮
+                }
+                
+                // 生成页码数组 - 简单可靠的分页算法
+                let pages = [];
+                
+                if (totalPages <= maxVisiblePages) {
+                    // 如果总页数小于等于最大可见页码数，显示所有页码
+                    for (let i = 1; i <= totalPages; i++) {
+                        pages.push(i);
+                    }
+                } else {
+                    // 总页数大于最大可见页码数，需要折叠显示，但只使用一个省略号
+                    
+                    // 计算每侧应该显示的页码数
+                    const sidePages = Math.floor((maxVisiblePages - 3) / 2); // 减去固定的3个位置：第1页、最后一页、当前页
+                    
+                    // 添加第一页
+                    pages.push(1);
+                    
+                    // 根据当前页位置决定省略号位置
+                    if (currentPage <= 2) {
+                        // 当前页是第一页或第二页，显示左侧连续页码，右侧用省略号
+                        const endPage = Math.min(maxVisiblePages - 1, totalPages - 1);
+                        for (let i = 2; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        // 只有当后面还有页码时才添加省略号
+                        if (endPage < totalPages - 1) {
+                            pages.push('...');
+                        }
+                    } else if (currentPage <= 3) {
+                        // 当前页是第三页，确保显示第1、2、3、4页（如果存在），右侧用省略号
+                        pages.push(2);
+                        pages.push(3);
+                        // 如果存在第4页，也添加进来
+                        if (totalPages >= 4) {
+                            pages.push(4);
+                        }
+                        // 如果总页数更多，继续添加页码直到达到限制
+                        const endPage = Math.min(maxVisiblePages - 1, totalPages - 1);
+                        for (let i = 5; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        // 只有当后面还有页码时才添加省略号
+                        if (endPage < totalPages - 1) {
+                            pages.push('...');
+                        }
+                    } else if (currentPage == totalPages) {
+                        // 当前页是尾页，确保显示相邻页码
+                        pages.push('...');
+                        // 至少显示倒数第二页
+                        const showCount = Math.max(1, sidePages * 2);
+                        const startPage = Math.max(2, totalPages - showCount);
+                        for (let i = startPage; i <= totalPages - 1; i++) {
+                            pages.push(i);
+                        }
+                    } else if (currentPage >= totalPages - sidePages) {
+                        // 当前页靠近结尾，显示首页后的连续页码，右侧用省略号
+                        const endPage = Math.min(sidePages * 2 + 1, totalPages - 1);
+                        for (let i = 2; i <= endPage; i++) {
+                            pages.push(i);
+                        }
+                        // 只有当后面还有页码时才添加省略号
+                        if (endPage < totalPages - 1) {
+                            pages.push('...');
+                        }
+                    } else {
+                        // 当前页在中间，左侧用省略号，显示当前页及相邻页码
+                        pages.push('...');
+                        // 确保显示当前页及其直接相邻的页码
+                        const start = Math.max(2, currentPage - 1);
+                        const end = Math.min(totalPages - 1, currentPage + 1);
+                        for (let i = start; i <= end; i++) {
+                            pages.push(i);
+                        }
+                        // 只有当后面还有页码时才添加省略号
+                        if (end < totalPages - 1) {
+                            pages.push('...');
+                        }
+                    }
+                    
+                    // 添加最后一页（如果不是第一页）
+                    if (totalPages > 1) {
+                        pages.push(totalPages);
+                    }
+                }
+                
+                // 渲染页码按钮
+                pages.forEach(page => {
+                    if (page === '...') {
+                        paginationHTML += '<button class="ellipsis" disabled>...</button>';
+                    } else if (page === currentPage) {
+                        paginationHTML += `<button class="active">${page}</button>`;
+                    } else {
+                        paginationHTML += `<button onclick="changePage(${page})">${page}</button>`;
+                    }
+                });
+                
+                // 下一页按钮
+                if (currentPage < totalPages) {
+                    paginationHTML += `<button onclick="changePage(${currentPage + 1})">下一页 ›</button>`;
+                } else {
+                    paginationHTML += '<button class="disabled">下一页 ›</button>';
+                }
+                
+                paginationContainer.innerHTML = paginationHTML;
+            }
+            
+            // 页面切换函数
+            window.changePage = function(page) {
+                // 保存当前滚动位置
+                const scrollPosition = window.scrollY || window.pageYOffset;
+                
+                currentPage = page;
+                renderArticles();
+                
+                // 恢复滚动位置
+                window.scrollTo(0, scrollPosition);
+            };
+            
+            // 渲染当前页面的文章
+            function renderArticles() {
+                // 对整个文章列表进行排序（每次渲染时都进行排序以确保正确性）
+                filteredArticles = filteredArticles.slice().sort((a,b)=>{ 
+                    // 严格按发布日期从新到旧排序
+                    const dateA = a.date ? new Date(a.date) : 0;
+                    const dateB = b.date ? new Date(b.date) : 0;
+                    
+                    // 按发布日期从新到旧排序
+                    return dateB - dateA;
+                });
+                
+                const startIndex = (currentPage - 1) * PAGE_SIZE;
+                const endIndex = startIndex + PAGE_SIZE;
+                const pageArticles = filteredArticles.slice(startIndex, endIndex);
+                
+                // 直接渲染页面文章，不再进行排序
+                if(!pageArticles.length) {
+                    articlesContainer.innerHTML = '<p>暂无文章</p>';
+                } else {
+                    articlesContainer.innerHTML = pageArticles.map(a=>
+                        '<article class="article-item">' +
+                            '<h2><a href="' + a.url + '">' + escapeHtml(a.title) + '</a></h2>' +
+                            '<div class="meta">' + (a.date || '未知日期') + ' · <strong>' + escapeHtml(a.category) + '</strong></div>' +
+                            '<p class="summary">' + escapeHtml(a.summary || '') + '</p>' +
+                            '<div class="card-footer"><a class="read-more" href="' + a.url + '">阅读全文 →</a></div>' +
+                        '</article>'
+                    ).join('');
+                }
+                renderPagination(filteredArticles.length, currentPage, PAGE_SIZE);
+            }
+
+            function applyFilters(){
+                const activeBtn = document.querySelector('.category-nav button.active');
+                const category = activeBtn? activeBtn.dataset.category : 'all';
+                const q = (searchInput.value||'').trim().toLowerCase();
+                let filtered = articles;
+                if(category !== 'all') filtered = filtered.filter(a => a.category === category);
+                if(q) filtered = filtered.filter(a => (a.title||'').toLowerCase().includes(q) || (a.summary||'').toLowerCase().includes(q));
+                
+                // 对筛选结果进行排序
+                filtered = filtered.slice().sort((a,b)=>{ 
+                    // 严格按发布日期从新到旧排序
+                    const dateA = a.date ? new Date(a.date) : 0;
+                    const dateB = b.date ? new Date(b.date) : 0;
+                    
+                    // 按发布日期从新到旧排序
+                    return dateB - dateA;
+                });
+                
+                // 将排序后的筛选结果存储到 localStorage
+                try {
+                    localStorage.setItem('blog_articles', JSON.stringify(filtered));
+                } catch (e) {
+                    console.warn('无法将筛选后的文章列表存储到 localStorage', e);
+                }
+                
+                // 重置到第一页
+                currentPage = 1;
+                filteredArticles = filtered;
+                renderArticles();
+            }
+
+            // 搜索联动
+            searchInput.addEventListener('input', ()=> applyFilters());
+
+            // 初始渲染
+            // 对文章列表进行排序并存储到 localStorage 供文章页面使用
+            console.log('原始文章数据:', articles);
+            
+            // 调试：打印每篇文章的日期
+            articles.forEach((article, index) => {
+                console.log(`文章${index + 1}: ${article.title}, 发布日期: ${article.date}, 修改日期: ${article.modifiedDate}`);
+            });
+            
+            const sortedArticles = articles.slice().sort((a,b)=>{ 
+                // 严格按发布日期从新到旧排序
+                const dateA = a.date ? new Date(a.date) : 0;
+                const dateB = b.date ? new Date(b.date) : 0;
+                
+                // 按发布日期从新到旧排序
+                const result = dateB - dateA;
+                console.log(`按发布日期排序: ${a.title}(${a.date}) vs ${b.title}(${b.date}), 结果: ${result}`);
+                return result;
+            });
+            console.log('排序后的文章数据:', sortedArticles);
+            
+            // 调试：打印排序后的文章顺序
+            sortedArticles.forEach((article, index) => {
+                console.log(`排序后第${index + 1}篇: ${article.title}, 发布日期: ${article.date}`);
+            });
+            
+            // 将排序后的文章列表存储到 localStorage
+            try {
+                localStorage.setItem('blog_articles', JSON.stringify(sortedArticles));
+            } catch (e) {
+                console.warn('无法将文章列表存储到 localStorage', e);
+            }
+            
+            filteredArticles = sortedArticles;
+            renderArticles();
+        })
+        .catch(err => { 
+            console.error('Fetch error:', err);
+            document.querySelector('.articles').innerHTML = `<p style="color:red">${err.message}</p>`; 
+        });
+
+
+
+
+  </script>
+  
+  <!-- 悬浮按钮 -->
+  <div class="floating-buttons">
+    <button class="floating-btn" id="scroll-top" title="回到顶部">↑</button>
+    <button class="floating-btn" id="scroll-bottom" title="前往底部">↓</button>
+  </div>
+  
+  <script>
+    // 悬浮按钮功能
+    document.getElementById('scroll-top').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    document.getElementById('scroll-bottom').addEventListener('click', () => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
