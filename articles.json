@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Windows重装系统之Office",
+    "url": "posts/Windows重装系统之Office.html",
+    "summary": "Office是许多Windows用户常用的软件之一。但是重装系统后该怎么重新下载安装，却使得有些人摸不着头脑。今天在这里推荐两款下载工具。",
+    "category": "Windows",
+    "date": "2026-01-28 08:29:29",
+    "commit_hash": "d791ac2",
+    "modifiedDate": "2026-01-28 15:24",
+    "cover": "https://img.114597.xyz/macOS/Office%20Tool%20Plus1.jpg"
+  },
+  {
+    "title": "Windows重装系统之完整流程",
+    "url": "posts/Windows重装系统之完整流程.html",
+    "summary": "今天从打造启动U盘开始，介绍一下如何在一台电脑上重装系统的完整流程。",
+    "category": "Windows",
+    "date": "2026-01-18 13:48:21",
+    "commit_hash": "ae3d846",
+    "modifiedDate": "2026-01-28 15:24",
+    "cover": "https://img.114597.xyz/macOS/FirPE3.jpg"
+  },
+  {
+    "title": "Windows重装系统之无人值守",
+    "url": "posts/Windows重装系统之无人值守.html",
+    "summary": "在日常使用电脑的过程中，难免会遇到系统崩溃、病毒感染等问题，这时候重装系统成为了一个常见的解决方案。传统的重装系统需要手动操作，耗时且繁琐。而无人值守安装（Unattended Installation）则可以大大简化这一过程，实现自动化安装，节省时间和精力。本文将介绍如何制作无人值守应答文件，并插入 ISO 镜像文件里。",
+    "category": "Windows",
+    "date": "2026-01-17 11:02:07",
+    "commit_hash": "19cff16",
+    "modifiedDate": "2026-01-28 08:29",
+    "cover": "https://img.114597.xyz/macOS/%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%881.jpg"
+  },
+  {
+    "title": "Windows重装系统之ISO",
+    "url": "posts/Windows重装系统之ISO.html",
+    "summary": "众所周知，Windows重装系统第一步也是最重要的一步，就是选择ISO（系统镜像文件）。但是网上搜索Windows的ISO，又怕不是官方原版的镜像。因为第三方的ISO很有可能会被他人植入一些其他东西，万一其中包含流氓软件或病毒那就更麻烦了。因此，选择一个令人放心的ISO下载网站就显得尤为重要了。",
+    "category": "Windows",
+    "date": "2026-01-02 04:05:54",
+    "commit_hash": "383a664",
+    "modifiedDate": "2026-01-28 08:29",
+    "cover": "https://img.114597.xyz/macOS/MediaCreationTool.jpg"
+  },
+  {
+    "title": "Windows重装系统之PE",
+    "url": "posts/Windows重装系统之PE.html",
+    "summary": "Windows预安装环境，简称WinPE，顾名思义就是安装系统时的环境。在此环境下，具有最高权限，可以对系统进行重装、修复、备份等操作。***WinPE如今已经成为安装系统、电脑维护不可或缺的一款必备工具了。***",
+    "category": "Windows",
+    "date": "2025-12-26 05:26:25",
+    "commit_hash": "da3e282",
+    "modifiedDate": "2026-01-28 08:29",
+    "cover": "https://img.114597.xyz/macOS/%E5%BE%AE%E8%BD%AFpe.jpg"
+  },
+  {
+    "title": "Windows电脑之系统",
+    "url": "posts/Windows之系统.html",
+    "summary": "Windows操作系统是大部分人使用的电脑操作系统。但是很多人却并不是很懂该怎么设置它，从而让我们使用它更加得心应手。",
+    "category": "Windows",
+    "date": "2025-12-26 05:26:25",
+    "commit_hash": "da3e282",
+    "modifiedDate": "2026-01-28 08:29",
+    "cover": ""
+  },
+  {
+    "title": "流量卡+保号套餐",
+    "url": "posts/流量卡+保号套餐.html",
+    "summary": "本篇详细介绍如何获取流量卡，以及如何办理保号套餐，合理降低月租费。（若现有套餐包含家庭宽带，则不适合改办保号套餐，可改办包含宽带的最低套餐）",
+    "category": "其他",
+    "date": "2025-12-20 05:50:38",
+    "commit_hash": "f3fd554",
+    "modifiedDate": "2026-01-28 08:29",
+    "cover": "https://img.114597.xyz/macOS/%E5%8D%A1%E4%B8%96%E7%95%8C.jpg"
+  },
+  {
+    "title": "搭建博客",
+    "url": "posts/搭建博客.html",
+    "summary": "本博客基于 GitHub Pages 搭建。",
+    "category": "其他",
+    "date": "2025-12-19 12:06:33",
+    "commit_hash": "065ff4f",
+    "modifiedDate": "2026-01-28 08:29",
+    "cover": ""
+  }
+]

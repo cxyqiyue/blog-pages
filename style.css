@@ -1,0 +1,1347 @@
+:root{
+  --bg: #fafafa;
+  --bg-secondary: #ffffff;
+  --text: #1a1a1a;
+  --text-secondary: #666666;
+  --border: #e5e7eb;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  --radius: 8px;
+  --max-width: 1100px;
+  --transition: all 0.2s ease;
+}
+
+/* Basic HTML styles to prevent horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure all elements respect box-sizing */
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Container */
+.container {
+  max-width: var(--max-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* Enhanced dark mode styles */
+body {
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  box-shadow: var(--shadow-md);
+}
+
+.article-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.article-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
+}
+
+.post-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Global styles for post title centering */
+.post-content h1 {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Ensure only the title is centered, other content is left-aligned */
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+  text-align: left;
+}
+
+.post-content p {
+  text-align: left;
+}
+
+.post-content ul,
+.post-content ol {
+  text-align: left;
+}
+
+.post-content li {
+  text-align: left;
+}
+
+.post-content blockquote {
+  text-align: left;
+}
+
+.post-content pre {
+  text-align: left;
+}
+
+.post-content code {
+  text-align: left;
+}
+
+.category-nav button {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.category-nav button:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.category-nav button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+
+
+.pagination {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 32px 0;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.pagination::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
+
+.pagination button {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pagination button:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.pagination button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.pagination button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination button.ellipsis {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+/* Hero */
+.hero{
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  color: white;
+  padding: 40px 32px;
+  border-radius: var(--radius);
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero h2{
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.hero p{
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.95;
+}
+
+/* Search & categories */
+.tools{
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.search{
+  flex: 1;
+  display: flex;
+  max-width: 400px;
+}
+
+.search input{
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+  transition: var(--transition);
+}
+
+.search input::placeholder{
+  color: rgba(255,255,255,0.7);
+}
+
+.search input:focus{
+  outline: none;
+  background: rgba(255,255,255,0.25);
+}
+
+.category-nav{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.category-nav button{
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.category-nav button:hover{
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.category-nav button.active{
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* Articles grid */
+.articles{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.article-item{
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-item:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.article-thumb{
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.article-item h2{
+  font-size: 18px;
+  margin: 0 0 8px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.article-item h2 a{
+  color: var(--text);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.article-item:hover h2 a{
+  color: var(--accent);
+}
+
+.meta{
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.summary{
+  color: var(--text-secondary);
+  font-size: 14px;
+  flex-grow: 1;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  /* 限制摘要显示行数，超出部分淡化过渡隐藏 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative;
+  max-height: 3.6em; /* 3行高度 */
+}
+
+/* 淡化过渡效果 */
+.summary::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1.2em;
+  background: linear-gradient(to bottom, transparent, var(--bg-secondary));
+}
+
+.card-footer{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.read-more{
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: var(--transition);
+}
+
+.read-more:hover{
+  color: var(--accent-hover);
+}
+
+/* Article page */
+.post-container{
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--bg-secondary);
+  padding: 40px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.post-hero{
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.post-cover{
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.post-hero h1{
+  margin: 0 0 12px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.post-meta {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.post-meta{
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.post-content{
+  margin-top: 28px;
+  color: var(--text);
+  line-height: 1.8;
+  text-align: left;
+}
+
+/* Override any inherited text alignment */
+.post-content * {
+  text-align: left;
+}
+
+.post-content .post-body > p:first-child {
+  margin-bottom: 16px;
+}
+
+.post-content p{
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.post-content h2{
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.post-content h3{
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 文章内容图片自适应缩放和居中显示 */
+.post-content img,
+.post-content figure img,
+.post-body img,
+.post-body figure img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 24px auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  width: auto;
+}
+
+/* 长截图样式 - 限制宽度以防止影响布局 */
+.post-content img.long-image,
+.post-content figure img.long-image,
+.post-body img.long-image,
+.post-body figure img.long-image {
+  max-width: 50% !important;
+  width: 50%;
+}
+
+/* 微信公众号风格的普通截图样式 */
+.post-content img.normal-image,
+.post-content figure img.normal-image,
+.post-body img.normal-image,
+.post-body figure img.normal-image {
+  max-width: 100% !important;
+  width: auto;
+}
+
+/* 图片容器样式 */
+.post-content figure,
+.post-body figure {
+  margin: 24px auto;
+  padding: 0;
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
+/* 图片说明文字样式 */
+.post-content figcaption,
+.post-body figcaption {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* 响应式图片优化 */
+@media (max-width: 639px) {
+  .post-content img,
+  .post-content figure img,
+  .post-body img,
+  .post-body figure img {
+    margin: 16px auto;
+    border-radius: var(--radius);
+    max-width: 100%;
+    height: auto;
+    width: auto;
+  }
+  
+  /* 手机端长截图样式 */
+  .post-content img.long-image,
+  .post-content figure img.long-image,
+  .post-body img.long-image,
+  .post-body figure img.long-image {
+    max-width: 50%;
+    width: 50%;
+  }
+  
+  /* 图片容器样式 - 手机端 */
+  .post-content figure,
+  .post-body figure {
+    margin: 16px auto;
+    padding: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* 图片说明文字样式 - 手机端 */
+  .post-content figcaption,
+  .post-body figcaption {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    text-align: center;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  .post-content img,
+  .post-content figure img,
+  .post-body img,
+  .post-body figure img {
+    margin: 20px auto;
+    border-radius: var(--radius);
+    max-width: 100%;
+    height: auto;
+    width: auto;
+  }
+  
+  /* 平板端长截图样式 */
+  .post-content img.long-image,
+  .post-content figure img.long-image,
+  .post-body img.long-image,
+  .post-body figure img.long-image {
+    max-width: 50%;
+    width: 50%;
+  }
+  
+  /* 图片容器样式 - 平板端 */
+  .post-content figure,
+  .post-body figure {
+    margin: 20px auto;
+    padding: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* 图片说明文字样式 - 平板端 */
+  .post-content figcaption,
+  .post-body figcaption {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: center;
+  }
+}
+
+/* 确保图片在所有设备上都能正确显示 */
+@media (min-width: 1025px) {
+  .post-content img,
+  .post-content figure img,
+  .post-body img,
+  .post-body figure img {
+    max-width: 100%;
+    height: auto;
+    margin: 24px auto;
+    width: auto;
+  }
+  
+  /* 桌面端长截图样式 */
+  .post-content img.long-image,
+  .post-content figure img.long-image,
+  .post-body img.long-image,
+  .post-body figure img.long-image {
+    max-width: 50%;
+    width: 50%;
+  }
+  
+  /* 图片容器样式 - 桌面端 */
+  .post-content figure,
+  .post-body figure {
+    margin: 24px auto;
+    padding: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* 图片说明文字样式 - 桌面端 */
+  .post-content figcaption,
+  .post-body figcaption {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: center;
+  }
+}
+
+.post-content a{
+  color: var(--accent);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.post-content a:hover{
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.post-content code{
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.post-content pre{
+  background: var(--bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.post-content blockquote{
+  border-left: 4px solid var(--accent);
+  padding-left: 16px;
+  margin: 20px 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.post-content ol,
+.post-content ul {
+  margin: 20px 0;
+  padding-left: 24px;
+}
+
+.post-content li {
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+footer{
+  margin-top: 32px;
+  padding-top: 20px;
+}
+
+.loading{
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+/* Utilities */
+.muted{color: var(--text-secondary)}
+
+/* 文章导航 */
+.article-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.nav-prev, .nav-next, .nav-home {
+  flex: 1;
+}
+
+.nav-prev {
+  text-align: left;
+}
+
+.nav-home {
+  text-align: center;
+}
+
+.nav-next {
+  text-align: right;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: var(--bg-secondary);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background-color: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-arrow {
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+.nav-title {
+  vertical-align: middle;
+  display: inline-block;
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 响应式设计 - 手机端 */
+@media (max-width: 639px) {
+  .article-navigation {
+    flex-direction: column;
+    margin-top: 16px;
+    padding-top: 16px;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .nav-prev, .nav-next, .nav-home {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .nav-link {
+    width: 100%;
+    text-align: center;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Responsive - Mobile First Design */
+
+/* Mobile (< 640px) */
+@media (max-width: 639px){
+  /* 分页控件 - 手机端 */
+  .pagination {
+    gap: 2px;
+    margin: 16px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+  
+  .pagination::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+  }
+  
+  .pagination button {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: 36px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  body{
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .container{
+    padding: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  header.site-header{
+    margin-bottom: 16px;
+  }
+
+  .controls{
+    gap: 8px;
+  }
+
+  .hero{
+    padding: 20px 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero h2{
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .hero p{
+    font-size: 14px;
+  }
+
+  .tools{
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .search{
+    max-width: 100%;
+  }
+
+  .search input{
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .category-nav{
+    margin: 16px 0;
+    gap: 6px;
+  }
+
+  .category-nav button{
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .articles{
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .article-item{
+    padding: 16px;
+  }
+
+  .article-thumb{
+    height: 150px;
+    margin-bottom: 12px;
+  }
+
+  .article-item h2{
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .meta{
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .summary{
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .card-footer{
+    padding-top: 10px;
+  }
+
+  .read-more{
+    font-size: 12px;
+  }
+
+  .post-container{
+    padding: 16px;
+    margin: 0 -12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .post-hero h1{
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .post-meta{
+    font-size: 12px;
+    text-align: center;
+    margin: 12px 0;
+  }
+
+  .post-content .post-body > p:first-child {
+    margin-bottom: 16px;
+  }
+  
+  /* 文章内容图片自适应缩放 */
+  .post-content img, .post-body img, .post-content figure img, .post-body figure img {
+    max-width: 50% !important;
+    height: auto !important;
+    display: block;
+    margin: 16px auto;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    width: 50%;
+  }
+
+  .post-content figure,
+  .post-body figure {
+    margin: 16px auto;
+    padding: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .post-body figcaption {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  .post-content{
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    text-align: left;
+  }
+  
+  /* Center-align the title */
+  .post-content h1 {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  /* Ensure only title and meta are centered, other content is left-aligned on mobile */
+  .post-content h2,
+  .post-content h3,
+  .post-content h4,
+  .post-content h5,
+  .post-content h6,
+  .post-content p,
+  .post-content ul,
+  .post-content ol,
+  .post-content li,
+  .post-content blockquote,
+  .post-content pre,
+  .post-content code {
+    text-align: left;
+  }
+
+  .post-content h2{
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  .post-content h3{
+    font-size: 16px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .post-body figure {
+    margin: 16px auto;
+    max-width: 100%;
+    display: block;
+    text-align: center;
+  }
+  
+  .post-body figcaption {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  .post-content code{
+    font-size: 12px;
+  }
+
+  .post-content pre{
+    padding: 12px;
+    font-size: 12px;
+  }
+}
+
+/* Tablet (640px - 1024px) */
+@media (min-width: 640px) and (max-width: 1024px){
+  body{
+    padding: 16px;
+    font-size: 15px;
+  }
+
+  .hero{
+    padding: 32px 24px;
+    margin-bottom: 28px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero h2{
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .hero p{
+    font-size: 15px;
+  }
+
+  .tools{
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .search{
+    max-width: 100%;
+  }
+
+  .category-nav{
+    margin: 20px 0;
+    gap: 8px;
+  }
+
+  .category-nav button{
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .articles{
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .article-item{
+    padding: 18px;
+  }
+  
+  /* 分页控件响应式设计 - 平板 */
+  .pagination {
+    gap: 6px;
+    margin: 28px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+  }
+  
+  .pagination::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+  }
+  
+  .pagination button {
+    padding: 6px 10px;
+    font-size: 13px;
+    min-width: 36px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .article-thumb{
+    height: 170px;
+  }
+
+  .article-item h2{
+    font-size: 17px;
+  }
+
+  .post-container{
+    padding: 32px;
+    max-width: 90%;
+  }
+
+  .post-hero h1{
+    font-size: 28px;
+  }
+
+  /* Center-align the title for tablet */
+  .post-content h1 {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .post-meta{
+    text-align: center;
+    margin: 14px 0;
+  }
+
+  .post-content .post-body > p:first-child {
+    margin-bottom: 16px;
+  }
+
+  .post-content{
+    font-size: 15px;
+    text-align: left;
+  }
+  
+  /* Ensure only title and meta are centered, other content is left-aligned on tablet */
+  .post-content h2,
+  .post-content h3,
+  .post-content h4,
+  .post-content h5,
+  .post-content h6,
+  .post-content p,
+  .post-content ul,
+  .post-content ol,
+  .post-content li,
+  .post-content blockquote,
+  .post-content pre,
+  .post-content code {
+    text-align: left;
+  }
+  
+  /* 文章内容图片自适应缩放 */
+  .post-content img, .post-body img, .post-content figure img, .post-body figure img {
+    max-width: 50% !important;
+    height: auto !important;
+    display: block;
+    margin: 16px auto;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    width: 50%;
+  }
+
+  .post-content figure,
+  .post-body figure {
+    margin: 20px auto;
+    padding: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .post-body figcaption {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    text-align: center;
+  }
+  
+  /* 文章导航 - 平板 */
+  .article-navigation {
+    margin-top: 16px;
+    padding-top: 16px;
+    gap: 16px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .nav-link {
+    padding: 10px 16px;
+    overflow: hidden;
+  }
+}
+
+
+
+/* 悬浮按钮 */
+.floating-buttons {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+  /* 确保按钮不会导致横向滚动 */
+  max-width: calc(100vw - 40px);
+}
+
+.floating-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.floating-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+/* Desktop (> 1024px) */
+@media (min-width: 1025px){
+  body{
+    padding: 20px;
+  }
+
+  .articles{
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+
+  .post-container{
+    max-width: 800px;
+    padding: 40px;
+  }
+  
+  .post-meta{
+    text-align: center;
+    margin: 16px 0;
+  }
+
+  .post-content .post-body > p:first-child {
+    margin-bottom: 16px;
+  }
+  
+  /* Center-align the title for desktop */
+  .post-content h1 {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .post-content{
+    text-align: left;
+  }
+  
+  /* Ensure only title and meta are centered, other content is left-aligned on desktop */
+  .post-content h2,
+  .post-content h3,
+  .post-content h4,
+  .post-content h5,
+  .post-content h6,
+  .post-content p,
+  .post-content ul,
+  .post-content ol,
+  .post-content li,
+  .post-content blockquote,
+  .post-content pre,
+  .post-content code {
+    text-align: left;
+  }
+  
+  
+  
+  /* 文章导航 - 桌面端 */
+  .article-navigation {
+    margin-top: 16px;
+    padding-top: 16px;
+    gap: 20px;
+    border-top: 1px solid var(--border);
+  }
+  
+  .nav-link {
+    padding: 10px 20px;
+    overflow: hidden;
+  }
+}
+
+/* Twikoo 评论系统样式 */
+#tcomment {
+  margin-top: 20px;
+}
+
+#tcomment h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+}
+
+/* 移动端适配 */
+@media (max-width: 639px) {
+  #tcomment h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+}
+
+/* 平板端适配 */
+@media (min-width: 640px) and (max-width: 1024px) {
+  #tcomment h2 {
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+}
+
+/* 桌面端适配 */
+@media (min-width: 1025px) {
+  #tcomment h2 {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+}
+// Trigger workflow
+/* 2026年 1月18日 星期日 22时58分24秒 CST */
+/* Force cache refresh 2026年 1月19日 星期一 12时30分46秒 CST */
+/* Force refresh 1769590285 */
+/* Force refresh 2026年 1月28日 星期三 17时24分55秒 CST */
+/* Force refresh for all styles 2026年 1月28日 星期三 17时31分40秒 CST */
+/* Manual refresh 2026年 1月28日 星期三 17时47分58秒 CST */
+/* Force deployment refresh 2026年 1月28日 星期三 17时51分14秒 CST */
