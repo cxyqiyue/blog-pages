@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <title>搭建博客</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+    
+    <style>
+        /* 阅读进度条样式 */
+        .reading-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #f0f0f0;
+            z-index: 9999;
+            transition: all 0.2s ease;
+        }
+        
+        .reading-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+        
+        /* 图片放大模态框样式 - 类似微信公众号 */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .image-modal-content {
+            display: block;
+            margin: auto;
+            max-width: 95vw;
+            max-height: 95vh;
+            min-width: 30vw;
+            object-fit: contain;
+            cursor: grab;
+            transition: transform 0.2s ease;
+        }
+        
+        .image-modal-content:active {
+            cursor: grabbing;
+        }
+        
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-modal-close:hover,
+        .image-modal-close:focus {
+            color: #ddd;
+            text-decoration: none;
+        }
+        
+        /* 为文章中的图片添加光标样式 */
+        .post-body img {
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .post-body img:hover {
+            opacity: 0.8;
+        }
+        
+        /* 三端适配：图片放大模态框响应式设计 */
+        @media (max-width: 639px) {
+            .image-modal-content {
+                max-width: 98vw;
+                max-height: 90vh;
+                min-width: 40vw;
+            }
+            
+            .image-modal-close {
+                top: 15px;
+                right: 15px;
+                font-size: 25px;
+                width: 35px;
+                height: 35px;
+            }
+        }
+        
+        @media (min-width: 640px) and (max-width: 1024px) {
+            .image-modal-content {
+                max-width: 95vw;
+                max-height: 95vh;
+                min-width: 60vw;
+            }
+            
+            .image-modal-close {
+                top: 18px;
+                right: 18px;
+                font-size: 28px;
+                width: 38px;
+                height: 38px;
+            }
+        }
+            
+            /* Markdown表格样式 - 适配三端，类似微信公众号效果 */
+            .post-body table {
+                border-collapse: collapse !important;
+                margin: 20px auto !important;
+                width: 100% !important; /* 与普通图片宽度一致 */
+                max-width: 100% !important;
+                overflow-x: auto !important;
+                display: table !important; /* 使用table显示模式以确保居中 */
+                font-size: 0.9em !important;
+                box-sizing: border-box !important;
+                border: 1px solid #e6e6e6 !important; /* 添加边框以更接近微信公众号效果 */
+                border-radius: 4px !important; /* 轻微圆角 */
+                background-color: #fff !important;
+                table-layout: fixed !important; /* 固定表格布局，使列宽能更好地适应容器 */
+            }
+            
+            /* 确保Pandoc生成的表格样式也正确应用 */
+            .post-body table th,
+            .post-body table td,
+            .post-body table .header,
+            .post-body table .odd,
+            .post-body table .even {
+                border: 1px solid #e6e6e6 !important; /* 边框颜色较浅 */
+                padding: 10px 12px !important;
+                text-align: left !important;
+                word-break: break-word !important; /* 允许文字换行 */
+                word-wrap: break-word !important; /* 确保长单词换行 */
+                vertical-align: top !important; /* 顶部对齐，更符合微信公众号效果 */
+                min-width: 70px !important;
+                line-height: 1.5 !important; /* 添加行高，改善文字显示 */
+                box-sizing: border-box !important; /* 确保padding不会增加元素宽度 */
+            }
+            
+            .post-body table th,
+            .post-body table .header {
+                background-color: #f8f8f8 !important; /* 更浅的灰色背景 */
+                font-weight: 500 !important; /* 减轻字体粗细 */
+                color: #333 !important;
+                text-align: left !important;
+                padding: 10px 12px !important;
+                line-height: 1.5 !important; /* 添加行高 */
+            }
+            
+            .post-body table tr,
+            .post-body table .odd,
+            .post-body table .even {
+                background-color: transparent !important; /* 微信公众号表格通常没有交替行颜色 */
+            }
+            
+            .post-body table tr:nth-child(even),
+            .post-body table .even {
+                background-color: transparent !important; /* 微信公众号表格通常没有交替行颜色 */
+            }
+            
+            .post-body table tr:hover {
+                background-color: transparent !important; /* 移除悬停效果，更像微信公众号 */
+            }
+            
+
+            
+            /* 平板端适配 */
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .post-body table {
+                    font-size: 0.88em !important;
+                    width: 100% !important; /* 平板端也保持100%宽度 */
+                    display: table !important; /* 使用table显示模式以确保居中 */
+                }
+                
+                .post-body table th,
+                .post-body table td,
+                .post-body table .header,
+                .post-body table .odd,
+                .post-body table .even {
+                    padding: 10px 12px !important;
+                    word-break: break-word !important;
+                    box-sizing: border-box !important; /* 确保平板端单元格盒模型正确 */
+                }
+            }
+            
+            /* 防止内容溢出造成横向滚动 */
+            .post-body {
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+                word-break: break-word;
+            }
+            
+            .post-body pre {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                overflow-x: auto;
+            }
+            
+            .post-body code {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                max-width: 100%;
+                display: inline-block;
+            }
+            
+            /* 长截图样式 - 限制宽度以防止影响布局 */
+            .post-body img.long-image {
+                max-width: 50% !important;
+                width: 50%;
+                height: auto;
+                display: block;
+                margin: 10px auto;
+            }
+            
+            /* 微信公众号风格的普通截图样式 */
+            .post-body img.normal-image {
+                max-width: 100% !important;
+                width: auto;
+                height: auto;
+                display: block;
+                margin: 10px auto;
+            }
+            
+            /* 图片基础样式 - 普通截图，类似微信公众号显示效果 */
+            .post-body img:not(.long-image):not(.normal-image) {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 10px auto;
+                box-sizing: border-box;
+            }
+            
+            /* 桌面端普通截图适配 - 适合直接阅读的大小 */
+            @media (min-width: 1025px) {
+                .post-body img:not(.long-image):not(.normal-image) {
+                    width: auto;
+                    max-width: 100%;
+                    height: auto;
+                    margin: 10px auto;
+                }
+            }
+            
+            /* 平板端普通截图适配 */
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .post-body img:not(.long-image):not(.normal-image) {
+                    width: auto;
+                    max-width: 100%;
+                    height: auto;
+                    margin: 10px auto;
+                }
+            }
+            
+            /* 手机端普通截图适配 */
+            @media (max-width: 768px) {
+                .post-body img:not(.long-image):not(.normal-image) {
+                    width: 100%;
+                    max-width: 100%;
+                    height: auto;
+                    margin: 10px auto;
+                }
+                
+                .post-body {
+                    padding: 15px;
+                }
+                
+                /* 手机端长截图样式 - 保持50%宽度 */
+                .post-body img.long-image {
+                    max-width: 50%;
+                    width: 50%;
+                }
+                
+                /* 手机端表格样式 - 保持与普通图片一致的宽度 */
+                .post-body table {
+                    font-size: 0.85em !important;
+                    width: 100% !important; /* 重新设置宽度以确保与图片一致 */
+                    display: table !important; /* 使用table显示模式以确保居中 */
+                    overflow-x: auto !important;
+                    white-space: normal !important; /* 允许内容换行 */
+                }
+                
+                .post-body table th,
+                .post-body table td,
+                .post-body table .header,
+                .post-body table .odd,
+                .post-body table .even {
+                    padding: 8px 10px !important;
+                    min-width: 65px !important;
+                    font-size: 0.95em !important; /* 手机端稍微大一点的字体 */
+                    word-break: break-word !important; /* 确保手机端内容能正确换行 */
+                    word-wrap: break-word !important;
+                    box-sizing: border-box !important; /* 确保手机端单元格盒模型正确 */
+                }
+            }
+            
+            /* 为文章中的图片添加光标样式 */
+            .post-body img {
+                cursor: pointer;
+                transition: opacity 0.3s;
+            }
+            
+            .post-body img:hover {
+                opacity: 0.8;
+            }
+            
+            /* 平板端长截图样式 */
+            @media (min-width: 769px) and (max-width: 1024px) {
+                .post-body img.long-image {
+                    max-width: 50%;
+                    width: 50%;
+                }
+            }
+            
+            /* 桌面端长截图样式 */
+            @media (min-width: 1025px) {
+                .post-body img.long-image {
+                    max-width: 50%;
+                    width: 50%;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <article class="post-container">
+            <header class="post-hero">
+                            </header>
+
+            <section class="post-content">
+                <h1>搭建博客</h1>
+                <div class="post-meta">
+                    <time datetime="2025-12-19 12:06:33">创建时间：2025-12-19 12:06:33</time>
+                                        <span style="margin-left: 16px;">修改时间：<time datetime="2026-01-28 08:29">2026-01-28 08:29</time></span>
+                                                            <span style="margin-left: 16px;">分类：<span class="category-tag">其他</span></span>
+                                        <span style="margin-left: 16px;">访问量：<span id="twikoo_visitors">0</span></span>
+                </div>
+                <div class="post-body">
+                    <p>本博客基于 GitHub Pages 搭建。</p>
+                    <section id="github-pages-简介" class="level1">
+                    <h1>GitHub Pages 简介</h1>
+                    <p>GitHub Pages 是 GitHub 提供的一个免费托管网站服务，用户可以使用它来托管自己的个人网站、博客或项目页面。GitHub Pages 支持多种静态网站生成器，如 Jekyll、Hugo 和 Gatsby 等。</p>
+                    </section>
+                    <section id="markdown-简介" class="level1">
+                    <h1>Markdown 简介</h1>
+                    <p>Markdown 是一种轻量级标记语言，用于在文本编辑器中创建格式化的文档。它简单易学，同时也有强大的功能。Markdown 文档可以转换为 HTML、PDF、Word 等格式。</p>
+                    </section>
+                    <section id="简单搭建" class="level1">
+                    <h1>简单搭建</h1>
+                    <ol type="1">
+                    <li><p><strong>创建 GitHub 账号</strong>：如果你还没有 GitHub 账号，可以先注册一个。</p></li>
+                    <li><p><strong>创建仓库</strong>：在 GitHub 上创建一个新的仓库，仓库名称可以是 <code>username.github.io</code>，其中 <code>username</code> 是你的 GitHub 用户名。</p></li>
+                    <li><p><strong>克隆仓库</strong>：将仓库克隆到本地计算机上。</p></li>
+                    <li><p><strong>创建文章</strong>：在仓库中创建一个新的 Markdown 文件，文件名可以是 <code>index.md</code> 或 <code>README.md</code>。</p></li>
+                    <li><p><strong>编写文章</strong>：使用 Markdown 语法编写文章内容。</p></li>
+                    <li><p><strong>文章转化成 HTML</strong>：使用静态网站生成器将 Markdown 文件转换为 HTML 文件。</p></li>
+                    <li><p><strong>提交文章</strong>：将文章提交到仓库中。</p></li>
+                    <li><p><strong>查看文章</strong>：在浏览器中访问 <code>https://username.github.io</code>，即可查看发布的文章。</p></li>
+                    </ol>
+                    </section>
+                    <section id="高级搭建" class="level1">
+                    <h1>高级搭建</h1>
+                    <p>有多种博客搭建方式，如使用hexo、Jekyll、Hugo等，以下用hexo为例：</p>
+                    <section id="使用hexo搭建博客的步骤如下" class="level3">
+                    <h3>使用hexo搭建博客的步骤如下：</h3>
+                    <ol type="1">
+                    <li><p><strong>创建 GitHub 账号</strong>：如果你还没有 GitHub 账号，可以先注册一个。</p></li>
+                    <li><p><strong>创建仓库</strong>：在 GitHub 上创建一个新的仓库，仓库名称可以是 <code>username.github.io</code>，其中 <code>username</code> 是你的 GitHub 用户名。如果已经有了，直接跳过。</p></li>
+                    <li><p><strong>克隆仓库</strong>：将仓库克隆到本地计算机上。</p></li>
+                    <li><p><strong>安装hexo</strong>：在本地计算机上安装hexo。可以使用npm安装，命令如下：
+                    <code>npm install -g hexo-cli</code></p></li>
+                    <li><p><strong>初始化hexo</strong>：在克隆的本地仓库，即博客目录中初始化hexo，命令如下：
+                    <code>hexo init</code></p></li>
+                    <li><p><strong>添加主题</strong>：可以使用hexo的主题插件为博客添加主题。例如，使用hexo-theme-next主题插件，命令如下：
+                    <code>npm install hexo-theme-next --save</code></p></li>
+                    <li><p><strong>安装插件</strong>：安装hexo的插件，如hexo-generator-feed、hexo-generator-sitemap等。</p></li>
+                    <li><p><strong>配置hexo</strong>：编辑hexo的配置文件<code>_config.yml</code>，配置博客的标题、描述、作者、主题等。</p></li>
+                    <li><p><strong>创建文章</strong>：使用hexo创建新的文章，命令如下：
+                    <code>hexo new "文章标题"</code></p></li>
+                    <li><p><strong>编写文章</strong>：使用Markdown语法编写文章内容。</p></li>
+                    <li><p><strong>文章转化成 HTML</strong>：使用hexo将Markdown文件转换为HTML文件，命令如下：
+                    <code>hexo generate</code></p></li>
+                    <li><p><strong>部署博客</strong>：将博客部署到GitHub Pages上。可以使用hexo-deployer-git插件将博客部署到GitHub Pages上，命令如下：
+                    <code>hexo deploy</code></p></li>
+                    <li><p><strong>查看文章</strong>：在浏览器中访问<code>https://username.github.io</code>，即可查看发布的文章。</p></li>
+                    <li><p><strong>更新博客</strong>：当需要更新博客时，只需要编辑Markdown文件，然后重新运行hexo generate和hexo deploy命令即可。</p></li>
+                    <li><p><strong>添加评论</strong>：可以使用Disqus、Valine等评论插件为博客添加评论功能。</p></li>
+                    </ol>
+                    </section>
+                    </section>
+                </div>
+                
+                <!-- 阅读进度条 -->
+                <div id="reading-progress" class="reading-progress-bar">
+                    <div id="reading-progress-fill" class="reading-progress-fill"></div>
+                </div>
+                
+                <!-- 图片放大模态框 -->
+                <div id="imageModal" class="image-modal">
+                    <span class="image-modal-close" id="imageModalClose">&times;</span>
+                    <div id="imageModalContent" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+                        <img class="image-modal-content" id="modalImage" style="max-width: 95vw; max-height: 95vh; object-fit: contain; cursor: grab;">
+                    </div>
+                </div>
+            </section>
+
+            <footer style="margin-top:28px;">
+                <div class="article-navigation">
+                    <div class="nav-prev">
+                        <a href="#" id="prev-article" class="nav-link">
+                            <span class="nav-arrow">←</span>
+                            <span class="nav-title" id="prev-title">上一篇文章</span>
+                        </a>
+                    </div>
+                    <div class="nav-home">
+                        <a href="../index.html" class="nav-link">返回首页</a>
+                    </div>
+                    <div class="nav-next">
+                        <a href="#" id="next-article" class="nav-link">
+                            <span class="nav-title" id="next-title">下一篇文章</span>
+                            <span class="nav-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            <!-- 分割线：导航按钮与评论区之间 -->
+            <hr style="margin: 28px 0; border: 0; border-top: 1px solid var(--border);">
+            
+            <!-- Twikoo 评论系统 -->
+            <h2>评论</h2>
+            <div id="tcomment"></div>
+            
+        </footer>
+        
+
+    </article>
+</div>
+    <script>
+                
+                // 获取当前文章的文件名（用于匹配articles.json中的url）
+                function getCurrentArticleFileName() {
+                    const currentUrl = window.location.pathname;
+                    // 获取URL的最后一部分（文件名）
+                    const fileName = currentUrl.split('/').pop();
+                    // 解码URL编码的文件名
+                    return decodeURIComponent(fileName);
+                }
+                
+                // 获取当前文章的路径深度，用于计算正确的相对路径
+                function getCurrentPathDepth() {
+                    const currentUrl = window.location.pathname;
+                    // 计算URL中'/'的数量，减去1得到深度
+                    return currentUrl.split('/').filter(Boolean).length;
+                }
+                
+                // 加载文章列表并执行回调函数
+                function loadArticles(callback) {
+                    // 尝试使用相对路径，处理不同深度的情况
+                    let articlesPath;
+                    const pathDepth = getCurrentPathDepth();
+                    
+                    // 修复路径处理逻辑
+                    if (pathDepth === 3) {
+                        // 路径为 /pages/posts/文章.html
+                        articlesPath = '../../articles.json';
+                    } else if (pathDepth === 2) {
+                        // 路径为 /posts/文章.html
+                        articlesPath = '../articles.json';
+                    } else {
+                        // 默认路径
+                        articlesPath = '/articles.json';
+                    }
+                    
+                    fetch(articlesPath)
+                        .then(response => {
+                            if (!response.ok) {
+                                // 如果相对路径失败，尝试使用绝对路径
+                                return fetch('/articles.json');
+                            }
+                            return response;
+                        })
+                        .then(response => response.json())
+                        .then(articles => {
+                            // 严格按发布日期从新到旧排序，与首页保持一致
+                            const sortedArticles = articles.slice().sort((a, b) => {
+                                // 严格按发布日期从新到旧排序
+                                const dateA = a.date ? new Date(a.date) : 0;
+                                const dateB = b.date ? new Date(b.date) : 0;
+                                
+                                // 按发布日期从新到旧排序
+                                return dateB - dateA;
+                            });
+                            callback(sortedArticles);
+                        })
+                        .catch(error => {
+                            console.error('获取文章列表失败:', error);
+                            callback([]);
+                        });
+                }
+                
+                // 绑定上一篇文章按钮事件（跳转到更旧的文章）
+                const prevArticleLink = document.getElementById('prev-article');
+                const prevTitleSpan = document.getElementById('prev-title');
+                if (prevArticleLink && prevTitleSpan) {
+                    loadArticles(articles => {
+                        const currentFileName = getCurrentArticleFileName();
+                        const pathDepth = getCurrentPathDepth();
+                        
+                        const currentIndex = articles.findIndex(article => {
+                            // 通过文件名匹配文章
+                            return article.url.endsWith(currentFileName);
+                        });
+                        
+                        // 如果找到并且不是最后一篇文章（最旧的文章），则更新上一篇文章按钮的标题
+                        if (currentIndex >= 0 && currentIndex < articles.length - 1) {
+                            const prevArticle = articles[currentIndex + 1];
+                            prevTitleSpan.textContent = prevArticle.title;
+                            // 设置跳转链接 - 根据当前路径深度调整
+                            let articleUrl = prevArticle.url;
+                            // 修复路径处理逻辑
+                            // 修复路径处理逻辑
+                            if (pathDepth === 3) {
+                                // 当前在 /pages/posts/文章.html，需要调整路径
+                                articleUrl = '../' + prevArticle.url;
+                            } else if (pathDepth === 2) {
+                                // 当前在 /posts/文章.html，需要调整路径
+                                articleUrl = '../' + prevArticle.url;
+                            } else {
+                                // 其他情况，直接使用 url
+                                articleUrl = '/' + prevArticle.url;
+                            }
+                            prevArticleLink.href = articleUrl;
+                            prevArticleLink.style.cursor = 'pointer';
+                            prevArticleLink.style.opacity = '1';
+                        } else {
+                            // 如果没有找到或者已是最旧的一篇，显示默认文本
+                            prevTitleSpan.textContent = '已经是第一篇';
+                            prevArticleLink.removeAttribute('href');
+                            prevArticleLink.style.cursor = 'not-allowed';
+                            prevArticleLink.style.opacity = '0.5';
+                        }
+                    });
+                    
+                    // 添加点击事件监听器
+                    prevArticleLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // 如果有有效的链接，则跳转
+                        if (this.href && this.href !== 'javascript:void(0);') {
+                            window.location.href = this.href;
+                        }
+                    });
+                }
+                
+                // 绑定下一篇文章按钮事件（跳转到更新的文章）
+                const nextArticleLink = document.getElementById('next-article');
+                const nextTitleSpan = document.getElementById('next-title');
+                if (nextArticleLink && nextTitleSpan) {
+                    loadArticles(articles => {
+                        const currentFileName = getCurrentArticleFileName();
+                        const pathDepth = getCurrentPathDepth();
+                        
+                        const currentIndex = articles.findIndex(article => {
+                            // 通过文件名匹配文章
+                            return article.url.endsWith(currentFileName);
+                        });
+                        
+                        // 如果找到并且不是第一篇文章（最新的文章），则更新下一篇文章按钮的标题
+                        if (currentIndex > 0) {
+                            const nextArticle = articles[currentIndex - 1];
+                            nextTitleSpan.textContent = nextArticle.title;
+                            // 设置跳转链接 - 根据当前路径深度调整
+                            let articleUrl = nextArticle.url;
+                            // 修复路径处理逻辑
+                            // 修复路径处理逻辑
+                            if (pathDepth === 3) {
+                                // 当前在 /pages/posts/文章.html，需要调整路径
+                                articleUrl = '../' + nextArticle.url;
+                            } else if (pathDepth === 2) {
+                                // 当前在 /posts/文章.html，需要调整路径
+                                articleUrl = '../' + nextArticle.url;
+                            } else {
+                                // 其他情况，直接使用 url
+                                articleUrl = '/' + nextArticle.url;
+                            }
+                            nextArticleLink.href = articleUrl;
+                            nextArticleLink.style.cursor = 'pointer';
+                            nextArticleLink.style.opacity = '1';
+                        } else {
+                            // 如果没有找到或者已是最新一篇，显示默认文本
+                            nextTitleSpan.textContent = '已经是最新篇';
+                            nextArticleLink.removeAttribute('href');
+                            nextArticleLink.style.cursor = 'not-allowed';
+                            nextArticleLink.style.opacity = '0.5';
+                        }
+                    });
+                    
+                    // 添加点击事件监听器
+                    nextArticleLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // 如果有有效的链接，则跳转
+                        if (this.href && this.href !== 'javascript:void(0);') {
+                            window.location.href = this.href;
+                        }
+                    });
+                }
+        </script>
+        
+        <!-- 悬浮按钮 -->
+        <div class="floating-buttons">
+          <button class="floating-btn" id="scroll-top" title="回到顶部">↑</button>
+          <button class="floating-btn" id="scroll-bottom" title="前往底部">↓</button>
+        </div>
+        
+        <script>
+          // 悬浮按钮功能
+          document.getElementById('scroll-top').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+          
+          document.getElementById('scroll-bottom').addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          });
+        </script>
+        
+        <script src="https://fastly.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js"></script>
+        
+        <script>
+          // 初始化Twikoo（默认配置）
+          twikoo.init({
+            el: '#tcomment',
+            envId: 'https://www.twikoo.114597.xyz/'
+          });
+
+          // 如果需要访客数，延迟调用以避免 race condition
+          setTimeout(() => {
+            if (typeof twikoo !== 'undefined' && typeof twikoo.getVisitors === 'function') {
+              twikoo.getVisitors([
+                { url: window.location.pathname, title: document.title }
+              ]).then(res => {
+                const el = document.getElementById('twikoo_visitors');
+                if (el && res && res[0]) el.innerText = res[0].visitors;
+              }).catch(err => console.warn('twikoo.getVisitors error:', err));
+            }
+          }, 2000);
+        </script>
+        
+        <script>
+        // 图片放大功能 - 类似微信公众号效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取模态框元素
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeModal = document.getElementById('imageModalClose');
+            
+            // 移动端触摸事件变量
+            let initialDistance = 0;
+            let initialScale = 1;
+            let currentScale = 1;
+            let currentX = 0;
+            let currentY = 0;
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            
+            // 为文章中的所有图片添加点击事件
+            const images = document.querySelectorAll('.post-body img');
+            
+            images.forEach(function(img) {
+                // 电脑端：单击放大
+                img.addEventListener('click', function(e) {
+                    // 检测设备类型，如果是移动设备则不执行单击放大
+                    if (isMobileDevice()) {
+                        return; // 移动设备上单击不放大
+                    }
+                    e.stopPropagation();
+                    openModal(img);
+                });
+                
+                // 移动端：双击放大
+                let tapCount = 0;
+                let timeoutRef = null;
+                
+                img.addEventListener('touchend', function(e) {
+                    e.stopPropagation();
+                    // 防止移动端双击缩放
+                    e.preventDefault();
+                    
+                    if (isMobileDevice()) {
+                        tapCount++;
+                        if (tapCount === 1) {
+                            // 第一次点击，设置定时器等待第二次点击
+                            timeoutRef = setTimeout(function() {
+                                tapCount = 0; // 重置计数器
+                            }, 300); // 300ms内等待第二次点击
+                        } else if (tapCount === 2) {
+                            // 第二次点击，在这里打开模态框
+                            clearTimeout(timeoutRef); // 清除定时器
+                            tapCount = 0; // 重置计数器
+                            openModal(img);
+                        }
+                    } else {
+                        // 非移动设备，单击放大
+                        openModal(img);
+                    }
+                });
+            });
+            
+            // 检测是否为移动设备的函数（仅手机，不包括平板）
+            function isMobileDevice() {
+                // 使用更严格的移动设备检测，排除平板设备
+                return window.innerWidth <= 768; // 只有手机端（屏幕宽度小于等于768px）才是移动设备
+            }
+            
+            // 打开模态框的通用函数
+            function openModal(img) {
+                modal.style.display = 'block';
+                
+                // 优先使用data-original-url属性，如果不存在则使用src
+                let originalSrc = img.getAttribute('data-original-url') || img.src;
+                
+                // 如果是常见的图床服务，尝试获取原始图片
+                // 对于一些图床服务，可能需要移除缩放参数
+                try {
+                    const url = new URL(originalSrc);
+                    
+                    // 移除常见的缩放参数
+                    url.searchParams.delete('w');
+                    url.searchParams.delete('width');
+                    url.searchParams.delete('h');
+                    url.searchParams.delete('height');
+                    url.searchParams.delete('imageMogr2');
+                    url.searchParams.delete('imageView');
+                    url.searchParams.delete('imageView2');
+                    url.searchParams.delete('imageView2/1');
+                    url.searchParams.delete('imageView2/2');
+                    url.searchParams.delete('imageView2/3');
+                    url.searchParams.delete('imageView2/4');
+                    url.searchParams.delete('imageView2/5');
+                    url.searchParams.delete('imageMogr');
+                    url.searchParams.delete('imageResize');
+                    url.searchParams.delete('imageQuality');
+                    url.searchParams.delete('q');
+                    url.searchParams.delete('quality');
+                    url.searchParams.delete('format');
+                    url.searchParams.delete('auto-orient');
+                    url.searchParams.delete('ignore-error');
+                    url.searchParams.delete('size');
+                    url.searchParams.delete('s');
+                    url.searchParams.delete('thumbnail');
+                    url.searchParams.delete('thumb');
+                    url.searchParams.delete('fit');
+                    url.searchParams.delete('crop');
+                    url.searchParams.delete('scale');
+                    url.searchParams.delete('zoom');
+                    url.searchParams.delete('max-age');
+                    url.searchParams.delete('v');
+                    url.searchParams.delete('t');
+                    url.searchParams.delete('token');
+                    url.searchParams.delete('sign');
+                    url.searchParams.delete('timestamp');
+                    url.searchParams.delete('signature');
+                    url.searchParams.delete('auth_key');
+                    
+                    originalSrc = url.toString();
+                } catch (e) {
+                    // 如果URL解析失败，使用原始src
+                    originalSrc = img.getAttribute('data-original-url') || img.src;
+                }
+                
+                modalImg.src = originalSrc;
+                
+                // 设置alt属性（如果存在）
+                if (img.alt) {
+                    modalImg.alt = img.alt;
+                } else {
+                    modalImg.alt = '';
+                }
+                
+                // 初始化状态
+                currentScale = 1;
+                currentX = 0;
+                currentY = 0;
+                modalImg.style.transform = 'scale(1) translate(0, 0)';
+                modalImg.style.cursor = 'grab';
+                
+                // 确保图片加载后再设置初始状态
+                modalImg.onload = function() {
+                    // 重置缩放状态
+                    currentScale = 1;
+                    currentX = 0;
+                    currentY = 0;
+                    modalImg.style.transform = 'scale(1) translate(0, 0)';
+                    modalImg.style.cursor = 'grab';
+                    
+                    // 确保移动端触摸事件可以立即使用
+                    // 重新绑定触摸事件以确保在图片加载后有效
+                    setupTouchEvents();
+                };
+                
+                // 立即设置触摸事件，即使图片尚未加载完成
+                setupTouchEvents();
+                
+                // 防止背景页面滚动
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // 设置触摸事件的独立函数
+            function setupTouchEvents() {
+                // 移除可能存在的旧事件监听器
+                modalImg.removeEventListener('touchstart', handleTouchStart);
+                document.removeEventListener('touchmove', handleTouchMove);
+                document.removeEventListener('touchend', handleTouchEnd);
+                
+                // 重新添加触摸事件监听器
+                modalImg.addEventListener('touchstart', handleTouchStart, { passive: false });
+                document.addEventListener('touchmove', handleTouchMove, { passive: false });
+                document.addEventListener('touchend', handleTouchEnd);
+            }
+            
+            // 触摸事件处理函数
+            let touchVelocityX = 0, touchVelocityY = 0;
+            let touchLastX = 0, touchLastY = 0;
+            let touchLastTime = 0;
+            let isPinching = false;
+            
+            function handleTouchStart(e) {
+                if (e.touches.length === 2) {
+                    // 双指缩放
+                    e.preventDefault();
+                    isPinching = true;
+                    isDragging = false; // 停止拖拽
+                    initialDistance = getDistance(e.touches[0], e.touches[1]);
+                    initialScale = currentScale;
+                } else if (e.touches.length === 1) {
+                    // 单指拖拽
+                    isDragging = true;
+                    isPinching = false; // 停止缩放
+                    dragStartX = e.touches[0].clientX - currentX;
+                    dragStartY = e.touches[0].clientY - currentY;
+                    
+                    // 记录触摸开始位置和时间
+                    touchLastX = e.touches[0].clientX;
+                    touchLastY = e.touches[0].clientY;
+                    touchLastTime = Date.now();
+                    
+                    modalImg.style.cursor = 'grabbing';
+                    modalImg.style.transition = 'none'; // 拖拽时禁用过渡效果
+                }
+            }
+            
+            function handleTouchMove(e) {
+                if (e.touches.length === 2 && isPinching) {
+                    // 双指缩放
+                    e.preventDefault();
+                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                    const scale = (currentDistance / initialDistance) * initialScale;
+                    
+                    // 限制缩放范围
+                    if (scale >= 0.5 && scale <= 10) {
+                        currentScale = scale;
+                        updateImageTransform();
+                    }
+                } else if (e.touches.length === 1 && isDragging) {
+                    // 单指拖拽
+                    e.preventDefault();
+                    
+                    const now = Date.now();
+                    const timeDiff = now - touchLastTime;
+                    
+                    currentX = e.touches[0].clientX - dragStartX;
+                    currentY = e.touches[0].clientY - dragStartY;
+                    
+                    // 计算速度
+                    if (timeDiff > 0) {
+                        touchVelocityX = (e.touches[0].clientX - touchLastX) / timeDiff;
+                        touchVelocityY = (e.touches[0].clientY - touchLastY) / timeDiff;
+                    }
+                    
+                    touchLastX = e.touches[0].clientX;
+                    touchLastY = e.touches[0].clientY;
+                    touchLastTime = now;
+                    
+                    updateImageTransform();
+                }
+            }
+            
+            function handleTouchEnd() {
+                if (isDragging) {
+                    isDragging = false;
+                    modalImg.style.cursor = 'grab';
+                    
+                    // 触摸结束时的惯性滑动
+                    if (Math.abs(touchVelocityX) > 0.1 || Math.abs(touchVelocityY) > 0.1) {
+                        const inertiaDuration = 500; // 惯性持续时间
+                        const startTime = Date.now();
+                        
+                        const inertiaMove = () => {
+                            const elapsed = Date.now() - startTime;
+                            const progress = Math.min(elapsed / inertiaDuration, 1);
+                            
+                            if (progress < 1) {
+                                // 计算衰减系数
+                                const decay = Math.pow(0.95, elapsed / 16); // 每16ms衰减
+                                
+                                currentX += touchVelocityX * 16 * decay;
+                                currentY += touchVelocityY * 16 * decay;
+                                
+                                // 更新速度
+                                touchVelocityX *= 0.95;
+                                touchVelocityY *= 0.95;
+                                
+                                updateImageTransform();
+                                requestAnimationFrame(inertiaMove);
+                            }
+                        };
+                        
+                        requestAnimationFrame(inertiaMove);
+                    }
+                }
+                isPinching = false;
+            }
+            
+            // 鼠标滚轮缩放 - 平滑缩放
+            let wheelTimer;
+            modalImg.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                
+                // 清除之前的定时器
+                clearTimeout(wheelTimer);
+                
+                const wheelDelta = e.deltaY;
+                const scaleFactor = wheelDelta > 0 ? 0.9 : 1.1;
+                
+                // 限制缩放范围
+                const newScale = currentScale * scaleFactor;
+                if (newScale >= 0.5 && newScale <= 10) {
+                    currentScale = newScale;
+                    updateImageTransform();
+                }
+                
+                // 设置定时器，使缩放效果更平滑
+                wheelTimer = setTimeout(() => {
+                    updateImageTransform();
+                }, 50);
+            });
+            
+            // 鼠标拖拽事件
+            let lastX = 0, lastY = 0;
+            let velocityX = 0, velocityY = 0;
+            let lastTime = 0;
+            
+            modalImg.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                dragStartX = e.clientX - currentX;
+                dragStartY = e.clientY - currentY;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                lastTime = Date.now();
+                modalImg.style.cursor = 'grabbing';
+                modalImg.style.transition = 'none'; // 拖拽时禁用过渡效果
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    const now = Date.now();
+                    const timeDiff = now - lastTime;
+                    
+                    currentX = e.clientX - dragStartX;
+                    currentY = e.clientY - dragStartY;
+                    
+                    // 计算速度
+                    if (timeDiff > 0) {
+                        velocityX = (e.clientX - lastX) / timeDiff;
+                        velocityY = (e.clientY - lastY) / timeDiff;
+                    }
+                    
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                    lastTime = now;
+                    
+                    updateImageTransform();
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    modalImg.style.cursor = 'grab';
+                    
+                    // 惯性滑动效果
+                    if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
+                        const inertiaDuration = 500; // 惯性持续时间
+                        const startTime = Date.now();
+                        
+                        const inertiaMove = () => {
+                            const elapsed = Date.now() - startTime;
+                            const progress = Math.min(elapsed / inertiaDuration, 1);
+                            
+                            if (progress < 1) {
+                                // 计算衰减系数
+                                const decay = Math.pow(0.95, elapsed / 16); // 每16ms衰减
+                                
+                                currentX += velocityX * 16 * decay;
+                                currentY += velocityY * 16 * decay;
+                                
+                                // 更新速度
+                                velocityX *= 0.95;
+                                velocityY *= 0.95;
+                                
+                                updateImageTransform();
+                                requestAnimationFrame(inertiaMove);
+                            }
+                        };
+                        
+                        requestAnimationFrame(inertiaMove);
+                    }
+                }
+            });
+            
+            // 阻止模态框区域的默认触摸行为
+            modal.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            modal.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            // 计算两点间距离
+            function getDistance(touch1, touch2) {
+                const x = touch1.clientX - touch2.clientX;
+                const y = touch1.clientY - touch2.clientY;
+                return Math.sqrt(x * x + y * y);
+            }
+            
+            // 更新图片变换
+            function updateImageTransform() {
+                modalImg.style.transform = 'scale(' + currentScale + ') translate(' + currentX + 'px, ' + currentY + 'px)';
+            }
+            
+            // 点击关闭按钮关闭模态框
+            closeModal.addEventListener('click', function(e) {
+                e.stopPropagation();
+                modal.style.display = 'none';
+                // 恢复页面滚动
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 为关闭按钮添加触摸事件以确保在移动设备上正常工作
+            closeModal.addEventListener('touchend', function(e) {
+                e.stopPropagation();
+                e.preventDefault(); // 防止移动端的默认行为
+                modal.style.display = 'none';
+                // 恢复页面滚动
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 点击模态框外部区域关闭模态框
+            modal.addEventListener('click', function(e) {
+                // 只有点击到背景区域（非图片本身）才关闭
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    // 恢复页面滚动
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // 防止图片点击关闭模态框
+            modalImg.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // 按ESC键关闭模态框
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'block') {
+                    modal.style.display = 'none';
+                    // 恢复页面滚动
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // 阅读进度条功能
+            const progressBar = document.getElementById('reading-progress-fill');
+            let scrollPercent = 0;
+            let currentPercent = 0;
+            let animationFrame;
+            
+            function updateScrollPercent() {
+                // 获取页面滚动信息
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                
+                // 计算滚动百分比
+                scrollPercent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+            }
+            
+            function smoothAnimation() {
+                // 使用缓动函数使动画更平滑
+                currentPercent += (scrollPercent - currentPercent) * 0.1;
+                
+                // 更新进度条宽度
+                progressBar.style.width = currentPercent + '%';
+                
+                // 继续动画循环
+                animationFrame = requestAnimationFrame(smoothAnimation);
+            }
+            
+            // 监听滚动事件，但只更新百分比值
+            window.addEventListener('scroll', function() {
+                updateScrollPercent();
+            });
+            
+            // 页面加载完成后初始化
+            updateScrollPercent();
+            smoothAnimation();
+        });
+        
+        // 自动检测长截图并应用相应样式
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有文章中的图片
+            const images = document.querySelectorAll('.post-body img, .post-content img');
+            
+            images.forEach(function(img) {
+                // 创建一个新的Image对象来获取原始尺寸
+                const tempImg = new Image();
+                tempImg.onload = function() {
+                    // 计算宽高比，专门检测垂直方向很长的截图（如手机长截图）
+                    const aspectRatio = tempImg.naturalWidth / tempImg.naturalHeight;
+                    const heightWidthRatio = tempImg.naturalHeight / tempImg.naturalWidth; // 高度/宽度
+                    
+                    // 检测长截图的条件：
+                    // 1. 高度远大于宽度（高宽比 > 2.0），表示这是一个纵向很长的图片（如手机长截图）
+                    // 2. 同时宽度在合理范围内（300-1200像素，符合常见屏幕截图尺寸）
+                    // 3. 或者原始高度特别大（超过3000像素）
+                    // 4. 或者高宽比在2.0-5.0之间的典型手机截图比例
+                    if ((heightWidthRatio > 2.0 && tempImg.naturalWidth > 300 && tempImg.naturalWidth < 1200) || 
+                        tempImg.naturalHeight > 3000 ||
+                        (heightWidthRatio >= 2.0 && heightWidthRatio <= 5.0 && tempImg.naturalWidth > 300)) {
+                        img.classList.add('long-image');
+                    } else {
+                        // 普通图片添加normal-image类（虽然默认样式相同，但为了语义化）
+                        img.classList.add('normal-image');
+                    }
+                };
+                
+                // 处理图片加载错误的情况
+                tempImg.onerror = function() {
+                    // 如果无法获取原始尺寸，默认当作普通图片处理
+                    img.classList.add('normal-image');
+                };
+                
+                // 设置临时图片的src以触发加载
+                tempImg.src = img.src;
+            });
+        });
+        </script>
+</body>
+</html>
